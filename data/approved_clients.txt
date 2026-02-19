@@ -1,0 +1,29 @@
+================================================================================
+                    CLAWED UP GLAM - APPROVED CLIENTS
+================================================================================
+This file contains all approved client appointments.
+Records are stored permanently and will not be automatically deleted.
+Manual deletion is required when needed.
+================================================================================
+
+
+--------------------------------------------------------------------------------
+APPROVED CLIENT RECORD
+--------------------------------------------------------------------------------
+Confirmation ID : CUG-MLTAEZ1N-BR9I
+Approved At     : 2026-02-19T09:57:51.785Z
+
+CLIENT DETAILS:
+  Name          : aparna
+  Email         : 3@gmail.com
+  Phone         : 6307680398
+
+APPOINTMENT DETAILS:
+  Date          : 2026-03-05
+  Time          : 19:27
+  Service       : Colored French - ₹299
+  Location      : kolkata
+  Notes         : None
+
+Status          : APPROVED
+--------------------------------------------------------------------------------

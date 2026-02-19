@@ -1,0 +1,1247 @@
+/* ============================================
+   CSS VARIABLES & RESET
+============================================ */
+:root {
+    --primary-pink: #f8b4c4;
+    --soft-pink: #fce4ec;
+    --lavender: #e8d5f2;
+    --nude: #f5e6e0;
+    --white: #ffffff;
+    --dark-text: #5a4a5a;
+    --accent-pink: #e91e63;
+    --shadow: rgba(248, 180, 196, 0.3);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #000000;
+    min-height: 100vh;
+    color: var(--dark-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ============================================
+   SPACE BACKGROUND WITH TWINKLING STARS
+============================================ */
+.stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    background: linear-gradient(to bottom, #000000 0%, #0a0a1a 50%, #000000 100%);
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: twinkle var(--twinkle-duration, 3s) ease-in-out infinite;
+}
+
+.star.small {
+    width: 1px;
+    height: 1px;
+    box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.3);
+}
+
+.star.medium {
+    width: 2px;
+    height: 2px;
+    box-shadow: 0 0 4px 2px rgba(255, 255, 255, 0.4);
+}
+
+.star.large {
+    width: 3px;
+    height: 3px;
+    box-shadow: 0 0 6px 3px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Overlay removed - using space background instead */
+
+/* ============================================
+   INTERACTIVE NAIL-THEMED BACKGROUND
+============================================ */
+.interactive-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* Floating Nail Polish Emojis */
+.nail-polish {
+    position: absolute;
+    font-size: 2.5rem;
+    opacity: 0.6;
+    animation: floatNailPolish 15s ease-in-out infinite;
+    filter: drop-shadow(0 5px 15px rgba(233, 30, 99, 0.3));
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nail-polish:hover {
+    transform: scale(1.5) rotate(15deg) !important;
+    opacity: 1;
+}
+
+.bottle-1 { top: 10%; left: 5%; animation-delay: 0s; font-size: 3rem; }
+.bottle-2 { top: 30%; right: 8%; animation-delay: -3s; font-size: 2rem; }
+.bottle-3 { top: 60%; left: 3%; animation-delay: -6s; font-size: 2.5rem; }
+.bottle-4 { top: 80%; right: 5%; animation-delay: -9s; font-size: 2rem; }
+.bottle-5 { top: 45%; left: 92%; animation-delay: -12s; font-size: 3rem; }
+.bottle-6 { top: 15%; right: 15%; animation-delay: -4s; font-size: 2rem; }
+
+@keyframes floatNailPolish {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(-5deg);
+    }
+    75% {
+        transform: translateY(-25px) rotate(3deg);
+    }
+}
+
+/* Sparkles */
+.sparkle {
+    position: absolute;
+    font-size: 1.5rem;
+    opacity: 0;
+    animation: sparkleAnimation 3s ease-in-out infinite;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.sparkle:hover {
+    animation: sparkleExpand 0.5s ease-out forwards;
+}
+
+.sparkle-1 { top: 20%; left: 15%; animation-delay: 0s; }
+.sparkle-2 { top: 40%; right: 20%; animation-delay: 0.5s; }
+.sparkle-3 { top: 70%; left: 25%; animation-delay: 1s; }
+.sparkle-4 { top: 85%; right: 30%; animation-delay: 1.5s; }
+.sparkle-5 { top: 25%; left: 80%; animation-delay: 2s; }
+.sparkle-6 { top: 55%; right: 10%; animation-delay: 2.5s; }
+.sparkle-7 { top: 10%; left: 40%; animation-delay: 0.8s; }
+.sparkle-8 { top: 90%; left: 60%; animation-delay: 1.8s; }
+
+@keyframes sparkleAnimation {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0.5) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2) rotate(180deg);
+    }
+}
+
+@keyframes sparkleExpand {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Nail Art Elements */
+.nail-art {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.5;
+    animation: floatArt 20s ease-in-out infinite;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nail-art:hover {
+    transform: scale(1.8) !important;
+    opacity: 1;
+}
+
+.art-1 { top: 35%; left: 8%; animation-delay: -2s; }
+.art-2 { top: 50%; right: 3%; animation-delay: -7s; }
+.art-3 { top: 75%; left: 85%; animation-delay: -12s; }
+.art-4 { top: 5%; right: 25%; animation-delay: -17s; }
+
+@keyframes floatArt {
+    0%, 100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+    33% {
+        transform: translateY(-30px) translateX(10px) rotate(10deg);
+    }
+    66% {
+        transform: translateY(-15px) translateX(-10px) rotate(-5deg);
+    }
+}
+
+/* Glitter Container */
+.glitter-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glitter-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #fff 0%, var(--primary-pink) 50%, transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: glitterFall linear forwards;
+}
+
+@keyframes glitterFall {
+    0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg) scale(0);
+    }
+}
+
+/* ============================================
+   HERO/BANNER SECTION
+============================================ */
+.hero-section {
+    width: 100%;
+    min-height: 400px;
+    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--lavender) 50%, var(--soft-pink) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 1s ease-out;
+}
+
+/* Glitter/Shimmer Effect */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.9), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.8), transparent),
+        radial-gradient(2px 2px at 50px 160px, rgba(255, 255, 255, 0.9), transparent),
+        radial-gradient(2px 2px at 90px 40px, rgba(255, 255, 255, 0.7), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.85), transparent),
+        radial-gradient(1px 1px at 160px 120px, rgba(255, 255, 255, 0.9), transparent),
+        radial-gradient(2px 2px at 200px 50px, rgba(255, 255, 255, 0.8), transparent),
+        radial-gradient(1px 1px at 220px 150px, rgba(255, 255, 255, 0.75), transparent),
+        radial-gradient(2px 2px at 280px 90px, rgba(255, 255, 255, 0.9), transparent),
+        radial-gradient(2px 2px at 320px 180px, rgba(255, 255, 255, 0.85), transparent),
+        radial-gradient(1px 1px at 380px 60px, rgba(255, 255, 255, 0.8), transparent),
+        radial-gradient(2px 2px at 420px 130px, rgba(255, 255, 255, 0.9), transparent),
+        radial-gradient(2px 2px at 480px 200px, rgba(255, 255, 255, 0.7), transparent),
+        radial-gradient(1px 1px at 520px 80px, rgba(255, 255, 255, 0.85), transparent),
+        radial-gradient(2px 2px at 580px 160px, rgba(255, 255, 255, 0.9), transparent),
+        radial-gradient(2px 2px at 640px 40px, rgba(255, 255, 255, 0.8), transparent),
+        radial-gradient(1px 1px at 700px 120px, rgba(255, 255, 255, 0.75), transparent),
+        radial-gradient(2px 2px at 760px 190px, rgba(255, 255, 255, 0.9), transparent),
+        radial-gradient(2px 2px at 820px 70px, rgba(255, 255, 255, 0.85), transparent),
+        radial-gradient(1px 1px at 880px 140px, rgba(255, 255, 255, 0.8), transparent);
+    background-size: 100% 100%;
+    animation: glitterShimmer 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes glitterShimmer {
+    0%, 100% {
+        opacity: 0.6;
+        transform: translateX(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(10px);
+    }
+}
+
+/* Hero Glitter Container */
+.hero-glitter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.glitter-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: linear-gradient(135deg, #fff, #ffd700, #fff);
+    border-radius: 50%;
+    box-shadow: 0 0 6px 2px rgba(255, 215, 0, 0.6), 0 0 10px 4px rgba(255, 255, 255, 0.4);
+    animation: glitterFloat 4s ease-in-out infinite;
+}
+
+@keyframes glitterFloat {
+    0%, 100% {
+        opacity: 0.4;
+        transform: translateY(0) scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1.2);
+    }
+}
+
+.banner-placeholder {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(45deg, var(--soft-pink), var(--lavender), var(--nude));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 4px solid var(--primary-pink);
+    position: relative;
+}
+
+.banner-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f8b4c4' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+
+.banner-content {
+    text-align: center;
+    z-index: 10;
+    padding: 20px;
+    position: relative;
+}
+
+.banner-icon {
+    font-size: 4rem;
+    color: var(--accent-pink);
+    margin-bottom: 15px;
+    animation: pulse 2s infinite;
+}
+
+/* Circular Logo Styling */
+.banner-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    animation: pulse 2s infinite;
+    box-shadow: 0 8px 30px rgba(233, 30, 99, 0.3),
+                0 4px 15px rgba(248, 180, 196, 0.4);
+    border: 4px solid var(--white);
+    background: linear-gradient(135deg, var(--light-pink), var(--primary-pink));
+    padding: 5px;
+}
+
+.banner-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: var(--dark-text);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.banner-subtext {
+    font-size: 1.1rem;
+    color: #7a6a7a;
+    font-weight: 300;
+}
+
+.banner-image-note {
+    display: none;
+}
+
+/* ============================================
+   MAIN CONTENT & FORM SECTION
+============================================ */
+.main-content {
+    max-width: 600px;
+    margin: -50px auto 50px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+    animation: slideUp 0.8s ease-out;
+}
+
+.form-container {
+    background: var(--white);
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 20px 60px var(--shadow), 0 10px 30px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-pink), var(--lavender), var(--accent-pink));
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.form-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--dark-text);
+    margin-bottom: 10px;
+}
+
+.form-header p {
+    color: #9a8a9a;
+    font-size: 0.95rem;
+}
+
+.form-header .header-icon {
+    font-size: 2.5rem;
+    color: var(--accent-pink);
+    margin-bottom: 15px;
+}
+
+/* ============================================
+   FORM STYLING
+============================================ */
+.appointment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--dark-text);
+    font-size: 0.9rem;
+}
+
+.form-group label .required {
+    color: var(--accent-pink);
+    margin-left: 3px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 18px;
+    color: var(--primary-pink);
+    font-size: 1rem;
+    transition: var(--transition);
+    z-index: 1;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px 20px 15px 50px;
+    border: 2px solid #f0e0e8;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark-text);
+    background: var(--white);
+    transition: var(--transition);
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-pink);
+    box-shadow: 0 0 0 4px rgba(248, 180, 196, 0.2);
+}
+
+.form-group input:focus + i,
+.form-group .input-wrapper:focus-within i {
+    color: var(--accent-pink);
+    transform: scale(1.1);
+}
+
+.form-group input::placeholder {
+    color: #c0b0c0;
+}
+
+.form-group input:valid:not(:placeholder-shown) {
+    border-color: #90EE90;
+}
+
+.form-group input:invalid:not(:placeholder-shown):not(:focus) {
+    border-color: #ffb4b4;
+}
+
+/* Select dropdown styling */
+.form-group select {
+    width: 100%;
+    padding: 15px 20px 15px 50px;
+    border: 2px solid #f0e0e8;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark-text);
+    background: var(--white);
+    transition: var(--transition);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f8b4c4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+}
+
+.form-group select:focus {
+    border-color: var(--primary-pink);
+    box-shadow: 0 0 0 4px rgba(248, 180, 196, 0.2);
+}
+
+.form-group select:focus + i,
+.input-wrapper:has(select):focus-within i {
+    color: var(--accent-pink);
+    transform: scale(1.1);
+}
+
+.form-group select option {
+    padding: 10px;
+}
+
+/* Service category groups styling */
+.form-group select optgroup {
+    font-weight: 600;
+    color: var(--accent-pink);
+    background-color: #fce4ec;
+    padding: 8px;
+    font-size: 0.95rem;
+}
+
+.form-group select optgroup option {
+    font-weight: 400;
+    color: var(--dark-text);
+    background-color: var(--white);
+    padding-left: 15px;
+}
+
+/* Textarea styling */
+.form-group textarea {
+    width: 100%;
+    padding: 15px 20px 15px 50px;
+    border: 2px solid #f0e0e8;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark-text);
+    background: var(--white);
+    transition: var(--transition);
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+    max-height: 200px;
+}
+
+.form-group textarea:focus {
+    border-color: var(--primary-pink);
+    box-shadow: 0 0 0 4px rgba(248, 180, 196, 0.2);
+}
+
+.form-group textarea:focus + i,
+.textarea-wrapper:focus-within i {
+    color: var(--accent-pink);
+    transform: scale(1.1);
+}
+
+.form-group textarea::placeholder {
+    color: #c0b0c0;
+}
+
+.textarea-wrapper i {
+    top: 18px;
+    align-self: flex-start;
+}
+
+/* Date and Time Row */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* ============================================
+   SUBMIT BUTTON
+============================================ */
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--accent-pink) 100%);
+    color: var(--white);
+    border: none;
+    padding: 18px 40px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(-1px);
+}
+
+.submit-btn i {
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.submit-btn:hover i {
+    transform: translateX(5px);
+}
+
+/* ============================================
+   FOOTER
+============================================ */
+.footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--dark-text);
+    font-size: 0.9rem;
+}
+
+.footer i {
+    color: var(--accent-pink);
+    animation: heartbeat 1.5s infinite;
+}
+
+/* ============================================
+   ANIMATIONS
+============================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.2);
+    }
+    50% {
+        transform: scale(1);
+    }
+    75% {
+        transform: scale(1.2);
+    }
+}
+
+/* Form groups fade-in animation */
+.form-group {
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-group:nth-child(1) { animation-delay: 0.1s; }
+.form-group:nth-child(2) { animation-delay: 0.2s; }
+.form-group:nth-child(3) { animation-delay: 0.3s; }
+.form-group:nth-child(4) { animation-delay: 0.4s; }
+.form-group:nth-child(5) { animation-delay: 0.5s; }
+.form-group:nth-child(6) { animation-delay: 0.6s; }
+
+/* ============================================
+   RESPONSIVE DESIGN - ALL DEVICES
+============================================ */
+
+/* Large Desktop (1400px+) */
+@media (min-width: 1400px) {
+    .main-content {
+        max-width: 650px;
+    }
+    
+    .banner-text {
+        font-size: 3rem;
+    }
+    
+    .form-container {
+        padding: 50px;
+    }
+}
+
+/* Standard Desktop (1200px - 1399px) */
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .main-content {
+        max-width: 600px;
+    }
+}
+
+/* Small Desktop / Laptop (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .main-content {
+        max-width: 550px;
+    }
+    
+    .banner-placeholder {
+        height: 380px;
+    }
+    
+    .banner-text {
+        font-size: 2.3rem;
+    }
+}
+
+/* Tablet Landscape (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .banner-placeholder {
+        height: 350px;
+    }
+
+    .banner-text {
+        font-size: 2rem;
+    }
+
+    .banner-icon {
+        font-size: 3.5rem;
+    }
+    
+    .banner-logo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .banner-subtext {
+        font-size: 1rem;
+    }
+
+    .main-content {
+        max-width: 500px;
+        margin-top: -40px;
+    }
+
+    .form-container {
+        padding: 35px 30px;
+        border-radius: 22px;
+    }
+
+    .form-header h2 {
+        font-size: 1.75rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .submit-btn {
+        padding: 16px 35px;
+        font-size: 1rem;
+    }
+}
+
+/* Tablet Portrait (600px - 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+    .banner-placeholder {
+        height: 320px;
+    }
+
+    .banner-text {
+        font-size: 1.8rem;
+    }
+
+    .banner-icon {
+        font-size: 3rem;
+    }
+    
+    .banner-logo {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .banner-subtext {
+        font-size: 0.95rem;
+    }
+    
+    .banner-image-note {
+        font-size: 0.85rem;
+        padding: 12px 24px;
+    }
+
+    .main-content {
+        margin-top: -35px;
+        padding: 0 25px;
+        max-width: 100%;
+    }
+
+    .form-container {
+        padding: 30px 25px;
+        border-radius: 20px;
+    }
+
+    .form-header h2 {
+        font-size: 1.6rem;
+    }
+    
+    .form-header .header-icon {
+        font-size: 2.2rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .submit-btn {
+        padding: 15px 30px;
+        font-size: 1rem;
+    }
+}
+
+/* Large Mobile (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+    .banner-placeholder {
+        height: 280px;
+    }
+
+    .banner-text {
+        font-size: 1.6rem;
+    }
+    
+    .banner-icon {
+        font-size: 2.5rem;
+    }
+    
+    .banner-logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .banner-subtext {
+        font-size: 0.9rem;
+    }
+
+    .banner-image-note {
+        font-size: 0.8rem;
+        padding: 10px 20px;
+    }
+
+    .main-content {
+        margin-top: -30px;
+        padding: 0 20px;
+    }
+
+    .form-container {
+        padding: 25px 20px;
+        border-radius: 18px;
+    }
+    
+    .form-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .form-header .header-icon {
+        font-size: 2rem;
+    }
+    
+    .form-header p {
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        padding: 14px 18px 14px 45px;
+        font-size: 0.95rem;
+    }
+
+    .input-wrapper i {
+        left: 15px;
+        font-size: 0.95rem;
+    }
+    
+    .form-group label {
+        font-size: 0.85rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .submit-btn {
+        padding: 14px 25px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Standard Mobile (360px - 479px) */
+@media (min-width: 360px) and (max-width: 479px) {
+    .banner-placeholder {
+        height: 250px;
+    }
+
+    .banner-text {
+        font-size: 1.4rem;
+    }
+    
+    .banner-icon {
+        font-size: 2.2rem;
+    }
+
+    .banner-subtext {
+        font-size: 0.85rem;
+    }
+
+    .banner-image-note {
+        font-size: 0.75rem;
+        padding: 8px 16px;
+    }
+
+    .main-content {
+        margin-top: -25px;
+        padding: 0 15px;
+        margin-bottom: 30px;
+    }
+
+    .form-container {
+        padding: 22px 18px;
+        border-radius: 16px;
+    }
+    
+    .form-header {
+        margin-bottom: 25px;
+    }
+    
+    .form-header h2 {
+        font-size: 1.35rem;
+    }
+    
+    .form-header .header-icon {
+        font-size: 1.8rem;
+    }
+    
+    .form-header p {
+        font-size: 0.85rem;
+    }
+
+    .form-group input {
+        padding: 13px 15px 13px 42px;
+        font-size: 0.9rem;
+        border-radius: 12px;
+    }
+
+    .input-wrapper i {
+        left: 14px;
+        font-size: 0.9rem;
+    }
+    
+    .form-group label {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+    
+    .appointment-form {
+        gap: 15px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .submit-btn {
+        padding: 14px 20px;
+        font-size: 0.9rem;
+        border-radius: 40px;
+    }
+    
+    .footer {
+        padding: 20px 15px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Small Mobile (320px - 359px) */
+@media (max-width: 359px) {
+    .banner-placeholder {
+        height: 220px;
+    }
+
+    .banner-text {
+        font-size: 1.2rem;
+    }
+    
+    .banner-icon {
+        font-size: 2rem;
+    }
+
+    .banner-subtext {
+        font-size: 0.8rem;
+    }
+
+    .banner-image-note {
+        font-size: 0.7rem;
+        padding: 6px 12px;
+    }
+
+    .main-content {
+        margin-top: -20px;
+        padding: 0 10px;
+        margin-bottom: 25px;
+    }
+
+    .form-container {
+        padding: 18px 15px;
+        border-radius: 14px;
+    }
+    
+    .form-header {
+        margin-bottom: 20px;
+    }
+    
+    .form-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .form-header .header-icon {
+        font-size: 1.6rem;
+    }
+    
+    .form-header p {
+        font-size: 0.8rem;
+    }
+
+    .form-group input {
+        padding: 12px 12px 12px 38px;
+        font-size: 0.85rem;
+        border-radius: 10px;
+    }
+
+    .input-wrapper i {
+        left: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .form-group label {
+        font-size: 0.75rem;
+        margin-bottom: 5px;
+    }
+    
+    .appointment-form {
+        gap: 12px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .submit-btn {
+        padding: 12px 18px;
+        font-size: 0.85rem;
+        border-radius: 35px;
+        margin-top: 10px;
+    }
+    
+    .footer {
+        padding: 15px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .banner-placeholder {
+        height: 200px;
+        min-height: auto;
+    }
+    
+    .hero-section {
+        min-height: auto;
+    }
+    
+    .banner-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+    
+    .banner-text {
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+    
+    .banner-subtext {
+        font-size: 0.8rem;
+    }
+    
+    .banner-image-note {
+        margin-top: 10px;
+        padding: 6px 15px;
+        font-size: 0.75rem;
+    }
+    
+    .main-content {
+        margin-top: -20px;
+    }
+}
+
+/* High DPI / Retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Print styles */
+@media print {
+    .interactive-bg,
+    .glitter-container,
+    .nail-polish,
+    .sparkle,
+    .nail-art {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+    
+    .form-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
+
+/* ============================================
+   CUSTOM SWEETALERT STYLING
+============================================ */
+.swal2-popup {
+    border-radius: 25px !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.swal2-title {
+    font-family: 'Playfair Display', serif !important;
+    color: var(--dark-text) !important;
+}
+
+.swal2-confirm {
+    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--accent-pink) 100%) !important;
+    border-radius: 50px !important;
+    padding: 12px 30px !important;
+    font-family: 'Poppins', sans-serif !important;
+}

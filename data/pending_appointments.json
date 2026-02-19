@@ -1,0 +1,61 @@
+{
+  "376f8cf565dd347cee7386519b4bfe9ef14df1786b14e308fab7031a23afb39e": {
+    "name": "Vaibhav Singh",
+    "email": "112316053@ece.iiitp.ac.in",
+    "phone": "6307680398",
+    "date": "2026-02-19",
+    "time": "00:58",
+    "service": "",
+    "notes": "",
+    "place": "Varanasi",
+    "confirmationId": "CUG-MLSFBMF7-NM6U",
+    "status": "approved",
+    "createdAt": "2026-02-18T19:27:08.612Z",
+    "token": "376f8cf565dd347cee7386519b4bfe9ef14df1786b14e308fab7031a23afb39e",
+    "updatedAt": "2026-02-18T19:29:50.149Z"
+  },
+  "9061ac62743773c8e63e95980ff4a64f82ee9209c4f5c523be985302560e1272": {
+    "name": "adsbfghdsv",
+    "email": "2@gmail.com",
+    "phone": "6394140862",
+    "date": "2026-02-19",
+    "time": "14:16",
+    "service": "",
+    "notes": "",
+    "place": "Varanasi",
+    "confirmationId": "CUG-MLT7QER0-G87U",
+    "status": "pending",
+    "createdAt": "2026-02-19T08:42:27.756Z",
+    "token": "9061ac62743773c8e63e95980ff4a64f82ee9209c4f5c523be985302560e1272"
+  },
+  "9d3d0c12b1abb66b0fb44cb2b64983f8308466928b48e48355011a24c5014b6d": {
+    "name": "Vaibhav Singh",
+    "email": "1@gmail.com",
+    "phone": "6307680398",
+    "date": "2026-02-20",
+    "time": "16:29",
+    "service": "Rose Glow Spa Manicure - ₹499",
+    "notes": "",
+    "place": "Varanasi",
+    "confirmationId": "CUG-MLT8DC30-3M1A",
+    "status": "approved",
+    "createdAt": "2026-02-19T09:00:17.388Z",
+    "token": "9d3d0c12b1abb66b0fb44cb2b64983f8308466928b48e48355011a24c5014b6d",
+    "updatedAt": "2026-02-19T09:01:15.000Z"
+  },
+  "5857dad8474ec41dcb0273fd6ed9f2fac935982024b7a95191da41519e453d50": {
+    "name": "aparna",
+    "email": "3@gmail.com",
+    "phone": "6307680398",
+    "date": "2026-03-05",
+    "time": "19:27",
+    "service": "Colored French - ₹299",
+    "notes": "",
+    "place": "kolkata",
+    "confirmationId": "CUG-MLTAEZ1N-BR9I",
+    "status": "approved",
+    "createdAt": "2026-02-19T09:57:33.035Z",
+    "token": "5857dad8474ec41dcb0273fd6ed9f2fac935982024b7a95191da41519e453d50",
+    "updatedAt": "2026-02-19T09:57:51.782Z"
+  }
+}

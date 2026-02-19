@@ -1,0 +1,17 @@
+# Requirements for Email Approval Monitor
+# Install with: pip install -r requirements_email_monitor.txt
+
+# Excel file manipulation
+openpyxl>=3.1.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# Standard library modules used (no install needed):
+# - imaplib (email fetching)
+# - email (email parsing)
+# - json (data storage)
+# - logging (error tracking)
+# - re (regex for parsing)
+# - hashlib (security)
+# - time (scheduling)
