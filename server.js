@@ -6,22 +6,22 @@
  * Server that handles:
  * - Serving static files
  * - Appointment booking with email approval workflow
- * - Text file storage for approved appointments (permanent)
+ * - Google Sheets integration for approved appointments
  * - Token-based secure approval/decline links
  * 
  * SETUP:
  * 1. Run: npm install
  * 2. Create .env file with email credentials
- * 3. Run: node server.js
- * 4. Open: http://localhost:3000
+ * 3. Set up Google Sheets (see GOOGLE_SHEETS_SETUP.md)
+ * 4. Run: node server.js
+ * 5. Open: http://localhost:3000
  */
 
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const ExcelJS = require('exceljs');
-// Note: node-cron removed - no auto-cleanup
+// Note: ExcelJS removed - using Google Sheets instead
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -55,9 +55,10 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'spamforvaibhav15@gmail.com';
 // FILE CONFIGURATION
 // ============================================
 const DATA_DIR = path.join(__dirname, 'data');
-const EXCEL_FILE = path.join(DATA_DIR, 'appointments.xlsx');
-const APPROVED_CLIENTS_FILE = path.join(DATA_DIR, 'approved_clients.txt');
 const PENDING_FILE = path.join(DATA_DIR, 'pending_appointments.json');
+
+// Google Sheets Webhook URL (set in .env file)
+const GOOGLE_SHEETS_WEBHOOK_URL = process.env.GOOGLE_SHEETS_WEBHOOK_URL || '';
 
 // Ensure data directory exists
 function ensureDataDirectory() {
@@ -155,289 +156,69 @@ function deletePendingAppointment(token) {
 }
 
 // ============================================
-// EXCEL FILE OPERATIONS
+// GOOGLE SHEETS INTEGRATION
 // ============================================
 
-async function initializeExcelFile() {
-    ensureDataDirectory();
-    
-    if (!fs.existsSync(EXCEL_FILE)) {
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Appointments');
-        
-        worksheet.columns = [
-            { header: 'Name', key: 'name', width: 25 },
-            { header: 'Email', key: 'email', width: 30 },
-            { header: 'Phone', key: 'phone', width: 18 },
-            { header: 'Date', key: 'date', width: 15 },
-            { header: 'Time', key: 'time', width: 12 },
-            { header: 'Service', key: 'service', width: 20 },
-            { header: 'Notes', key: 'notes', width: 35 },
-            { header: 'Place', key: 'place', width: 20 },
-            { header: 'ConfirmationID', key: 'confirmationId', width: 25 },
-            { header: 'Status', key: 'status', width: 15 },
-            { header: 'ApprovedAt', key: 'approvedAt', width: 22 }
-        ];
-        
-        const headerRow = worksheet.getRow(1);
-        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        headerRow.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFE91E63' }
+/**
+ * Send approved appointment data to Google Sheets via Apps Script Web App
+ * No local file storage - data goes directly to Google Sheets
+ */
+async function saveAppointmentToGoogleSheets(appointment) {
+    if (!GOOGLE_SHEETS_WEBHOOK_URL) {
+        console.warn('⚠️  Google Sheets webhook URL not configured. Set GOOGLE_SHEETS_WEBHOOK_URL in .env file.');
+        console.warn('⚠️  Appointment data was NOT saved. Please configure Google Sheets integration.');
+        return { success: false, error: 'Google Sheets not configured' };
+    }
+
+    try {
+        const payload = {
+            name: appointment.name || '',
+            phone: appointment.phone || '',
+            email: appointment.email || '',
+            date: appointment.date || '',
+            time: appointment.time || '',
+            service: appointment.service || '',
+            location: appointment.place || '',
+            notes: appointment.notes || '',
+            confirmationId: appointment.confirmationId || '',
+            status: 'Approved',
+            approvedAt: new Date().toISOString()
         };
-        headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
-        headerRow.height = 25;
-        
-        await workbook.xlsx.writeFile(EXCEL_FILE);
-        console.log('📊 Excel file created:', EXCEL_FILE);
-    }
-}
 
-async function saveApprovedAppointmentToExcel(appointment) {
-    const maxRetries = 3;
-    
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-            await initializeExcelFile();
-            
-            const workbook = new ExcelJS.Workbook();
-            await workbook.xlsx.readFile(EXCEL_FILE);
-            const worksheet = workbook.getWorksheet('Appointments');
-            
-            // Add new appointment row
-            const newRow = worksheet.addRow([
-                appointment.name,
-                appointment.email,
-                appointment.phone,
-                appointment.date,
-                appointment.time,
-                appointment.service || '',
-                appointment.notes || '',
-                appointment.place || '',
-                appointment.confirmationId,
-                'Approved',
-                new Date().toISOString()
-            ]);
-            
-            newRow.alignment = { vertical: 'middle' };
-            
-            // Sort by date and time
-            await sortWorksheetByDateTime(worksheet);
-            
-            await workbook.xlsx.writeFile(EXCEL_FILE);
-            return { success: true };
-            
-        } catch (error) {
-            if (error.code === 'EBUSY' || error.message.includes('locked')) {
-                console.log(`⏳ Attempt ${attempt}/${maxRetries}: File is locked, retrying...`);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            } else {
-                throw error;
-            }
-        }
-    }
-    
-    throw new Error('Excel file is currently in use. Please close it and try again.');
-}
-
-async function sortWorksheetByDateTime(worksheet) {
-    const rows = [];
-    
-    worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber > 1) {
-            rows.push({
-                data: [
-                    row.getCell(1).value,
-                    row.getCell(2).value,
-                    row.getCell(3).value,
-                    row.getCell(4).value,
-                    row.getCell(5).value,
-                    row.getCell(6).value,
-                    row.getCell(7).value,
-                    row.getCell(8).value,
-                    row.getCell(9).value,
-                    row.getCell(10).value,
-                    row.getCell(11).value
-                ]
-            });
-        }
-    });
-    
-    rows.sort((a, b) => {
-        const dateA = a.data[3] || '';
-        const dateB = b.data[3] || '';
-        const timeA = a.data[4] || '00:00';
-        const timeB = b.data[4] || '00:00';
-        
-        const dateTimeA = new Date(`${dateA}T${timeA}`);
-        const dateTimeB = new Date(`${dateB}T${timeB}`);
-        
-        return dateTimeA - dateTimeB;
-    });
-    
-    const rowCount = worksheet.rowCount;
-    for (let i = rowCount; i > 1; i--) {
-        worksheet.spliceRows(i, 1);
-    }
-    
-    rows.forEach(row => {
-        const newRow = worksheet.addRow(row.data);
-        newRow.alignment = { vertical: 'middle' };
-    });
-}
-
-// ============================================
-// TEXT FILE OPERATIONS (Permanent Storage)
-// ============================================
-
-function initializeApprovedClientsFile() {
-    ensureDataDirectory();
-    
-    if (!fs.existsSync(APPROVED_CLIENTS_FILE)) {
-        const header = `================================================================================
-                    CLAWED UP GLAM - APPROVED CLIENTS
-================================================================================
-This file contains all approved client appointments.
-Records are stored permanently and will not be automatically deleted.
-Manual deletion is required when needed.
-================================================================================\n\n`;
-        
-        fs.writeFileSync(APPROVED_CLIENTS_FILE, header, 'utf8');
-        console.log('📄 Approved clients text file created:', APPROVED_CLIENTS_FILE);
-    }
-}
-
-function saveApprovedAppointmentToTextFile(appointment) {
-    try {
-        initializeApprovedClientsFile();
-        
-        const approvedAt = new Date().toISOString();
-        const separator = '--------------------------------------------------------------------------------';
-        
-        const record = `\n${separator}
-APPROVED CLIENT RECORD
-${separator}
-Confirmation ID : ${appointment.confirmationId || 'N/A'}
-Approved At     : ${approvedAt}
-
-CLIENT DETAILS:
-  Name          : ${appointment.name || 'N/A'}
-  Email         : ${appointment.email || 'N/A'}
-  Phone         : ${appointment.phone || 'N/A'}
-
-APPOINTMENT DETAILS:
-  Date          : ${appointment.date || 'N/A'}
-  Time          : ${appointment.time || 'N/A'}
-  Service       : ${appointment.service || 'Not specified'}
-  Location      : ${appointment.place || 'Not specified'}
-  Notes         : ${appointment.notes || 'None'}
-
-Status          : APPROVED
-${separator}\n`;
-        
-        // Append to file (does not overwrite)
-        fs.appendFileSync(APPROVED_CLIENTS_FILE, record, 'utf8');
-        
-        console.log(`📄 Saved approved appointment to text file: ${appointment.confirmationId}`);
-        return { success: true };
-        
-    } catch (error) {
-        console.error('Error saving to text file:', error);
-        throw error;
-    }
-}
-
-async function readAppointmentsFromExcel() {
-    try {
-        await initializeExcelFile();
-        
-        const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.readFile(EXCEL_FILE);
-        
-        const worksheet = workbook.getWorksheet('Appointments');
-        const appointments = [];
-        
-        worksheet.eachRow((row, rowNumber) => {
-            if (rowNumber > 1) {
-                appointments.push({
-                    rowNumber,
-                    name: row.getCell(1).value || '',
-                    email: row.getCell(2).value || '',
-                    phone: row.getCell(3).value || '',
-                    date: row.getCell(4).value || '',
-                    time: row.getCell(5).value || '',
-                    service: row.getCell(6).value || '',
-                    notes: row.getCell(7).value || '',
-                    place: row.getCell(8).value || '',
-                    confirmationId: row.getCell(9).value || '',
-                    status: row.getCell(10).value || '',
-                    approvedAt: row.getCell(11).value || ''
-                });
-            }
+        const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+            redirect: 'follow'
         });
-        
-        return appointments;
-    } catch (error) {
-        if (error.code === 'EBUSY' || error.message.includes('locked')) {
-            throw new Error('Excel file is currently open. Please close it and try again.');
-        }
-        throw error;
-    }
-}
 
-async function deletePastAppointments() {
-    const maxRetries = 3;
-    
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        // Google Apps Script returns a redirect, so we need to follow it
+        const result = await response.text();
+        
         try {
-            await initializeExcelFile();
-            
-            const workbook = new ExcelJS.Workbook();
-            await workbook.xlsx.readFile(EXCEL_FILE);
-            const worksheet = workbook.getWorksheet('Appointments');
-            
-            const now = new Date();
-            const rowsToDelete = [];
-            
-            worksheet.eachRow((row, rowNumber) => {
-                if (rowNumber > 1) {
-                    const dateValue = row.getCell(4).value;
-                    const timeValue = row.getCell(5).value || '23:59';
-                    
-                    if (dateValue) {
-                        const appointmentDateTime = new Date(`${dateValue}T${timeValue}`);
-                        if (appointmentDateTime < now) {
-                            rowsToDelete.push(rowNumber);
-                        }
-                    }
-                }
-            });
-            
-            rowsToDelete.sort((a, b) => b - a);
-            
-            for (const rowNum of rowsToDelete) {
-                worksheet.spliceRows(rowNum, 1);
-            }
-            
-            if (rowsToDelete.length > 0) {
-                await workbook.xlsx.writeFile(EXCEL_FILE);
-                console.log(`🗑️  Deleted ${rowsToDelete.length} past appointment(s)`);
-            }
-            
-            return rowsToDelete.length;
-            
-        } catch (error) {
-            if (error.code === 'EBUSY' || error.message.includes('locked')) {
-                await new Promise(resolve => setTimeout(resolve, 2000));
+            const jsonResult = JSON.parse(result);
+            if (jsonResult.success) {
+                console.log(`📊 Saved appointment to Google Sheets: ${appointment.confirmationId}`);
+                return { success: true };
             } else {
-                console.error('Error deleting past appointments:', error);
-                return 0;
+                console.error('Google Sheets error:', jsonResult.error);
+                return { success: false, error: jsonResult.error };
             }
+        } catch {
+            // If response isn't JSON, check if it was successful based on status
+            if (response.ok) {
+                console.log(`📊 Saved appointment to Google Sheets: ${appointment.confirmationId}`);
+                return { success: true };
+            }
+            throw new Error('Invalid response from Google Sheets');
         }
+
+    } catch (error) {
+        console.error('Error saving to Google Sheets:', error.message);
+        return { success: false, error: error.message };
     }
-    
-    return 0;
 }
 
 // ============================================
@@ -1022,8 +803,11 @@ app.post('/api/approve/:token', async (req, res) => {
         // Update status to approved
         updatePendingAppointmentStatus(token, 'approved');
         
-        // Save to text file (permanent storage)
-        saveApprovedAppointmentToTextFile(appointment);
+        // Save to Google Sheets (cloud storage)
+        const sheetsResult = await saveAppointmentToGoogleSheets(appointment);
+        if (!sheetsResult.success) {
+            console.warn('⚠️  Failed to save to Google Sheets:', sheetsResult.error);
+        }
         
         // Send confirmation email to client
         await sendClientApprovalEmail(appointment);
@@ -1099,27 +883,20 @@ app.post('/api/decline/:token', async (req, res) => {
 });
 
 // Get all approved appointments
+// Note: Appointments are now stored in Google Sheets - access them directly there
 app.get('/api/appointments', async (req, res) => {
-    try {
-        const appointments = await readAppointmentsFromExcel();
-        res.json({
-            success: true,
-            count: appointments.length,
-            appointments: appointments
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message || 'Failed to load appointments'
-        });
-    }
+    res.json({
+        success: true,
+        message: 'Appointments are now stored in Google Sheets. Please access your Google Sheet directly to view all appointments.',
+        googleSheetsConfigured: !!GOOGLE_SHEETS_WEBHOOK_URL
+    });
 });
 
-// Cleanup endpoint - DISABLED (records are permanent)
+// Cleanup endpoint - Not needed with Google Sheets
 app.post('/api/cleanup', async (req, res) => {
     res.json({
-        success: false,
-        message: 'Auto-cleanup is disabled. Client records are stored permanently in data/approved_clients.txt. Please manually delete records from the text file when needed.'
+        success: true,
+        message: 'Cleanup is managed directly in Google Sheets. Open your spreadsheet to delete old records.'
     });
 });
 
@@ -1312,22 +1089,13 @@ function getConfirmationPageHTML(action, token, appointment) {
 }
 
 // ============================================
-// SCHEDULED TASKS (Disabled - No Auto-Cleanup)
-// ============================================
-
-// Auto-cleanup has been removed.
-// Client records are stored permanently in data/approved_clients.txt
-// Manual deletion is required when needed.
-
-// ============================================
 // START SERVER
 // ============================================
 app.listen(PORT, async () => {
     // Initialize email transporter
     emailTransporter = initializeEmailTransporter();
     
-    // Initialize approved clients text file
-    initializeApprovedClientsFile();
+    const googleSheetsStatus = GOOGLE_SHEETS_WEBHOOK_URL ? 'Configured ✅' : 'Not configured ⚠️';
     
     console.log(`
 ╔═══════════════════════════════════════════════════════════════════╗
@@ -1337,7 +1105,8 @@ app.listen(PORT, async () => {
 ║   Server running at: http://localhost:${PORT}                      ║
 ║   Admin Email: ${ADMIN_EMAIL}
 ║                                                                   ║
-║   📄 Approved Clients: ${APPROVED_CLIENTS_FILE}
+║   📊 Storage: Google Sheets (Cloud)                               ║
+║   📊 Google Sheets: ${googleSheetsStatus}
 ║                                                                   ║
 ║   API Endpoints:                                                  ║
 ║   • GET  /api/health           - Health check                     ║
@@ -1345,11 +1114,8 @@ app.listen(PORT, async () => {
 ║   • GET  /api/status/:token    - Check appointment status         ║
 ║   • GET  /api/approve/:token   - Approve appointment              ║
 ║   • GET  /api/decline/:token   - Decline appointment              ║
-║   • GET  /api/appointments     - View approved appointments       ║
+║   • GET  /api/appointments     - Info about appointments          ║
 ║                                                                   ║
-║   ⚠️  Auto-cleanup: DISABLED (permanent storage)                  ║
-║   📝 Records stored permanently in text file                      ║
-║   📝 Manual deletion required via text file                       ║
 ║   📧 Email: ${emailTransporter ? 'Configured ✅' : 'Not configured ⚠️'}
 ║                                                                   ║
 ╚═══════════════════════════════════════════════════════════════════╝
