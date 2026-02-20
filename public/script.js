@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * API Configuration
      */
     const API_CONFIG = {
-        baseUrl: 'http://localhost:3000',
+        baseUrl: '',
         endpoints: {
             bookAppointment: '/api/book-appointment',
             checkStatus: '/api/status'
