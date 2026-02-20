@@ -42,14 +42,14 @@ app.use(express.static('.')); // Serve static files
 // ============================================
 const SALON_CONFIG = {
     name: 'Clawed up Glam',
-    phone: process.env.SALON_PHONE || '(555) 123-4567',
+    phone: process.env.SALON_PHONE || '6394140862',
     address: process.env.SALON_ADDRESS || '123 Beauty Lane, Glamour City',
-    email: process.env.SALON_EMAIL || 'appointments@clawedupglam.com',
+    email: process.env.SALON_EMAIL || 'clawedupglambybanne@gmail.com',
     website: 'www.clawedupglam.com'
 };
 
 // Admin email for receiving approval requests
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'spamforvaibhav15@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'clawedupglambybanne@gmail.com';
 
 // ============================================
 // FILE CONFIGURATION
