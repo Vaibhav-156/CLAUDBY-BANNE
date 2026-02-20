@@ -2,10 +2,10 @@
   "name": "clawed-up-glam",
   "version": "2.0.0",
   "description": "Clawed up Glam - Nail Salon Appointment Booking System with Google Sheets Integration",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [
     "nail-salon",
