@@ -1121,3 +1121,8 @@ app.listen(PORT, async () => {
 ╚═══════════════════════════════════════════════════════════════════╝
     `);
 });
+
+// Serve index.html for all unmatched routes (for Vercel/static hosting)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
