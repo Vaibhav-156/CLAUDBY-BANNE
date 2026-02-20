@@ -107,14 +107,7 @@ function initializeEmailTransporter() {
 // PENDING APPOINTMENTS STORAGE (JSON)
 // ============================================
 function loadPendingAppointments() {
-    try {
-        ensureDataDirectory();
-        if (fs.existsSync(PENDING_FILE)) {
-            return JSON.parse(fs.readFileSync(PENDING_FILE, 'utf8'));
-        }
-    } catch (error) {
-        console.error('Error loading pending appointments:', error);
-    }
+    // Removed file-based pending appointments storage. Now handled via Google Sheets.
     return {};
 }
 
