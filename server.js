@@ -35,7 +35,7 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 // ============================================
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.')); // Serve static files
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from public folder
 
 // ============================================
 // SALON CONFIGURATION
