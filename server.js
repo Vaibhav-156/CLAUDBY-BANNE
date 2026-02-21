@@ -81,13 +81,21 @@ function initializeEmailTransporter() {
         return null;
     }
 
+    console.log('📧 Initializing email transporter...');
+    console.log(`   SMTP Host: ${process.env.SMTP_HOST || 'smtp.gmail.com'}`);
+    console.log(`   SMTP Port: ${process.env.SMTP_PORT || '587'}`);
+    console.log(`   SMTP User: ${process.env.SMTP_USER}`);
+
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST || 'smtp.gmail.com',
         port: parseInt(process.env.SMTP_PORT) || 587,
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
             user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS
+            pass: process.env.SMTP_PASS.replace(/\s/g, '') // Remove any spaces from app password
+        },
+        tls: {
+            rejectUnauthorized: false // Allow self-signed certificates
         }
     });
 
@@ -95,6 +103,7 @@ function initializeEmailTransporter() {
     transporter.verify((error, success) => {
         if (error) {
             console.error('❌ Email transporter verification failed:', error.message);
+            console.error('   Full error:', error);
         } else {
             console.log('✅ Email transporter is ready');
         }
@@ -511,25 +520,35 @@ function getClientDeclineEmailHTML(appointment) {
 async function sendAdminApprovalEmail(appointment, token) {
     if (!emailTransporter) {
         console.warn('⚠️  Email not sent - transporter not configured');
-        return { success: false, message: 'Email not configured' };
+        return { success: false, message: 'Email transporter not configured' };
     }
 
     const approveUrl = `${BASE_URL}/api/approve/${token}`;
     const declineUrl = `${BASE_URL}/api/decline/${token}`;
 
+    console.log(`📤 Attempting to send admin email to: ${ADMIN_EMAIL}`);
+
     try {
-        await emailTransporter.sendMail({
+        const mailOptions = {
             from: `"${SALON_CONFIG.name}" <${process.env.SMTP_USER}>`,
             to: ADMIN_EMAIL,
             subject: `🆕 New Appointment Request - ${appointment.name} - ${formatDate(appointment.date)}`,
             html: getAdminApprovalEmailHTML(appointment, approveUrl, declineUrl),
             text: `New appointment request from ${appointment.name}\n\nDate: ${appointment.date}\nTime: ${appointment.time}\nEmail: ${appointment.email}\nPhone: ${appointment.phone}\n\nApprove: ${approveUrl}\nDecline: ${declineUrl}`
-        });
+        };
 
-        console.log(`📧 Admin approval email sent for appointment ${appointment.confirmationId}`);
+        console.log(`   From: ${mailOptions.from}`);
+        console.log(`   To: ${mailOptions.to}`);
+        console.log(`   Subject: ${mailOptions.subject}`);
+
+        const info = await emailTransporter.sendMail(mailOptions);
+
+        console.log(`✅ Admin approval email sent for appointment ${appointment.confirmationId}`);
+        console.log(`   Message ID: ${info.messageId}`);
         return { success: true };
     } catch (error) {
         console.error('❌ Failed to send admin email:', error.message);
+        console.error('   Error details:', error);
         return { success: false, message: error.message };
     }
 }
@@ -710,11 +729,15 @@ app.post('/api/book-appointment', async (req, res) => {
         savePendingAppointments(pendingAppointments);
         
         // Send approval email to admin
-        await sendAdminApprovalEmail(appointment, token);
+        const emailResult = await sendAdminApprovalEmail(appointment, token);
         
         console.log(`⏳ New pending appointment: ${confirmationNumber}`);
         console.log(`   Name: ${fullName}`);
         console.log(`   Date: ${formatDate(appointmentDate)} at ${formatTime(appointmentTime)}`);
+        
+        if (!emailResult.success) {
+            console.error('❌ Email sending failed:', emailResult.message);
+        }
         
         res.json({
             success: true,
@@ -722,6 +745,8 @@ app.post('/api/book-appointment', async (req, res) => {
             confirmationNumber: confirmationNumber,
             token: token,
             status: 'pending',
+            emailSent: emailResult.success,
+            emailError: emailResult.success ? null : emailResult.message,
             appointmentData: {
                 ...appointment,
                 formattedDate: formatDate(appointmentDate),
