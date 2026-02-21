@@ -123,30 +123,22 @@ function initializeEmailTransporter() {
 }
 
 // ============================================
-// PENDING APPOINTMENTS STORAGE (JSON)
+// PENDING APPOINTMENTS STORAGE (IN-MEMORY + GOOGLE SHEETS)
 // ============================================
+// In-memory cache for serverless compatibility (Vercel has read-only filesystem)
+const pendingAppointmentsCache = {};
+
 function loadPendingAppointments() {
-    try {
-        if (!fs.existsSync(PENDING_FILE)) {
-            return {};
-        }
-        const data = fs.readFileSync(PENDING_FILE, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.error('Error loading pending appointments:', error);
-        return {};
-    }
+    // On Vercel, we can't use file system, so return the in-memory cache
+    // The actual source of truth is Google Sheets
+    return pendingAppointmentsCache;
 }
 
 function savePendingAppointments(appointments) {
-    try {
-        ensureDataDirectory();
-        fs.writeFileSync(PENDING_FILE, JSON.stringify(appointments, null, 2));
-        return true;
-    } catch (error) {
-        console.error('Error saving pending appointments:', error);
-        return false;
-    }
+    // On Vercel, file system is read-only, so we just update the cache
+    // Appointments are saved to Google Sheets instead
+    Object.assign(pendingAppointmentsCache, appointments);
+    return true;  // Always return success for in-memory operations
 }
 
 function getPendingAppointment(token) {
@@ -183,7 +175,7 @@ function deletePendingAppointment(token) {
  * Send approved appointment data to Google Sheets via Apps Script Web App
  * No local file storage - data goes directly to Google Sheets
  */
-async function saveAppointmentToGoogleSheets(appointment) {
+async function saveAppointmentToGoogleSheets(appointment, status = 'Approved') {
     if (!GOOGLE_SHEETS_WEBHOOK_URL) {
         console.warn('⚠️  Google Sheets webhook URL not configured. Set GOOGLE_SHEETS_WEBHOOK_URL in .env file.');
         console.warn('⚠️  Appointment data was NOT saved. Please configure Google Sheets integration.');
@@ -201,8 +193,10 @@ async function saveAppointmentToGoogleSheets(appointment) {
             location: appointment.place || '',
             notes: appointment.notes || '',
             confirmationId: appointment.confirmationId || '',
-            status: 'Approved',
-            approvedAt: new Date().toISOString()
+            status: status,
+            token: appointment.token || '',
+            createdAt: appointment.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString()
         };
 
         const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
@@ -220,7 +214,7 @@ async function saveAppointmentToGoogleSheets(appointment) {
         try {
             const jsonResult = JSON.parse(result);
             if (jsonResult.success) {
-                console.log(`📊 Saved appointment to Google Sheets: ${appointment.confirmationId}`);
+                console.log(`📊 Saved appointment to Google Sheets: ${appointment.confirmationId} (Status: ${status})`);
                 return { success: true };
             } else {
                 console.error('Google Sheets error:', jsonResult.error);
@@ -229,7 +223,7 @@ async function saveAppointmentToGoogleSheets(appointment) {
         } catch {
             // If response isn't JSON, check if it was successful based on status
             if (response.ok) {
-                console.log(`📊 Saved appointment to Google Sheets: ${appointment.confirmationId}`);
+                console.log(`📊 Saved appointment to Google Sheets: ${appointment.confirmationId} (Status: ${status})`);
                 return { success: true };
             }
             throw new Error('Invalid response from Google Sheets');
@@ -536,8 +530,22 @@ async function sendAdminApprovalEmail(appointment, token) {
         return { success: false, message: 'Email transporter not configured. Check Vercel environment variables.' };
     }
 
-    const approveUrl = `${BASE_URL}/api/approve/${token}`;
-    const declineUrl = `${BASE_URL}/api/decline/${token}`;
+    // Include appointment data in URL for serverless compatibility
+    const appointmentParams = encodeURIComponent(JSON.stringify({
+        name: appointment.name,
+        email: appointment.email,
+        phone: appointment.phone,
+        date: appointment.date,
+        time: appointment.time,
+        service: appointment.service,
+        place: appointment.place,
+        notes: appointment.notes,
+        confirmationId: appointment.confirmationId,
+        createdAt: appointment.createdAt
+    }));
+    
+    const approveUrl = `${BASE_URL}/api/approve/${token}?data=${appointmentParams}`;
+    const declineUrl = `${BASE_URL}/api/decline/${token}?data=${appointmentParams}`;
 
     console.log(`📤 Attempting to send admin email to: ${ADMIN_EMAIL}`);
 
@@ -740,10 +748,16 @@ app.post('/api/book-appointment', async (req, res) => {
             token: token
         };
         
-        // Save to pending appointments
+        // Save to pending appointments (in-memory cache)
         const pendingAppointments = loadPendingAppointments();
         pendingAppointments[token] = appointment;
         savePendingAppointments(pendingAppointments);
+        
+        // Also save to Google Sheets with "Pending" status for persistence across serverless functions
+        const sheetsResult = await saveAppointmentToGoogleSheets(appointment, 'Pending');
+        if (!sheetsResult.success) {
+            console.warn('⚠️  Failed to save pending appointment to Google Sheets:', sheetsResult.error);
+        }
         
         // Send approval email to admin
         const emailResult = await sendAdminApprovalEmail(appointment, token);
@@ -813,8 +827,24 @@ app.get('/api/status/:token', (req, res) => {
 // Approve appointment - Show confirmation page
 app.get('/api/approve/:token', async (req, res) => {
     const { token } = req.params;
+    const { data } = req.query;
     
-    const appointment = getPendingAppointment(token);
+    let appointment = getPendingAppointment(token);
+    
+    // If not in cache (serverless), try to get from URL parameters
+    if (!appointment && data) {
+        try {
+            appointment = JSON.parse(decodeURIComponent(data));
+            appointment.token = token;
+            appointment.status = 'pending';
+            // Cache it for this execution
+            const pendingAppointments = loadPendingAppointments();
+            pendingAppointments[token] = appointment;
+            savePendingAppointments(pendingAppointments);
+        } catch (error) {
+            console.error('Error parsing appointment data from URL:', error);
+        }
+    }
     
     if (!appointment) {
         return res.send(getResponseHTML('error', 'Appointment Not Found', 'This appointment link is invalid or has already been processed.'));
@@ -832,7 +862,7 @@ app.get('/api/approve/:token', async (req, res) => {
 app.post('/api/approve/:token', async (req, res) => {
     const { token } = req.params;
     
-    const appointment = getPendingAppointment(token);
+    let appointment = getPendingAppointment(token);
     
     if (!appointment) {
         return res.send(getResponseHTML('error', 'Appointment Not Found', 'This appointment link is invalid or has already been processed.'));
@@ -874,8 +904,24 @@ app.post('/api/approve/:token', async (req, res) => {
 // Decline appointment - Show confirmation page
 app.get('/api/decline/:token', async (req, res) => {
     const { token } = req.params;
+    const { data } = req.query;
     
-    const appointment = getPendingAppointment(token);
+    let appointment = getPendingAppointment(token);
+    
+    // If not in cache (serverless), try to get from URL parameters
+    if (!appointment && data) {
+        try {
+            appointment = JSON.parse(decodeURIComponent(data));
+            appointment.token = token;
+            appointment.status = 'pending';
+            // Cache it for this execution
+            const pendingAppointments = loadPendingAppointments();
+            pendingAppointments[token] = appointment;
+            savePendingAppointments(pendingAppointments);
+        } catch (error) {
+            console.error('Error parsing appointment data from URL:', error);
+        }
+    }
     
     if (!appointment) {
         return res.send(getResponseHTML('error', 'Appointment Not Found', 'This appointment link is invalid or has already been processed.'));
@@ -893,7 +939,7 @@ app.get('/api/decline/:token', async (req, res) => {
 app.post('/api/decline/:token', async (req, res) => {
     const { token } = req.params;
     
-    const appointment = getPendingAppointment(token);
+    let appointment = getPendingAppointment(token);
     
     if (!appointment) {
         return res.send(getResponseHTML('error', 'Appointment Not Found', 'This appointment link is invalid or has already been processed.'));
@@ -906,6 +952,12 @@ app.post('/api/decline/:token', async (req, res) => {
     try {
         // Update status to declined
         updatePendingAppointmentStatus(token, 'declined');
+        
+        // Save to Google Sheets with declined status for record keeping
+        const sheetsResult = await saveAppointmentToGoogleSheets(appointment, 'Declined');
+        if (!sheetsResult.success) {
+            console.warn('⚠️  Failed to save declined appointment to Google Sheets:', sheetsResult.error);
+        }
         
         // Send decline email to client
         await sendClientDeclineEmail(appointment);
