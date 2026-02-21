@@ -73,11 +73,21 @@ function ensureDataDirectory() {
 // ============================================
 let emailTransporter = null;
 
+function getEmailTransporter() {
+    // Lazy initialization - create transporter on first use
+    if (!emailTransporter) {
+        emailTransporter = initializeEmailTransporter();
+    }
+    return emailTransporter;
+}
+
 function initializeEmailTransporter() {
     // Check if email credentials are configured
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-        console.warn('⚠️  Email credentials not configured. Set SMTP_USER and SMTP_PASS in .env file.');
+        console.warn('⚠️  Email credentials not configured. Set SMTP_USER and SMTP_PASS in environment variables.');
         console.warn('⚠️  Emails will not be sent until credentials are configured.');
+        console.warn(`   SMTP_USER is ${process.env.SMTP_USER ? 'set' : 'NOT SET'}`);
+        console.warn(`   SMTP_PASS is ${process.env.SMTP_PASS ? 'set' : 'NOT SET'}`);
         return null;
     }
 
@@ -518,9 +528,12 @@ function getClientDeclineEmailHTML(appointment) {
 // ============================================
 
 async function sendAdminApprovalEmail(appointment, token) {
-    if (!emailTransporter) {
+    const transporter = getEmailTransporter();
+    
+    if (!transporter) {
         console.warn('⚠️  Email not sent - transporter not configured');
-        return { success: false, message: 'Email transporter not configured' };
+        console.warn('   Check that SMTP_USER and SMTP_PASS are set in Vercel environment variables');
+        return { success: false, message: 'Email transporter not configured. Check Vercel environment variables.' };
     }
 
     const approveUrl = `${BASE_URL}/api/approve/${token}`;
@@ -541,7 +554,7 @@ async function sendAdminApprovalEmail(appointment, token) {
         console.log(`   To: ${mailOptions.to}`);
         console.log(`   Subject: ${mailOptions.subject}`);
 
-        const info = await emailTransporter.sendMail(mailOptions);
+        const info = await transporter.sendMail(mailOptions);
 
         console.log(`✅ Admin approval email sent for appointment ${appointment.confirmationId}`);
         console.log(`   Message ID: ${info.messageId}`);
@@ -554,13 +567,15 @@ async function sendAdminApprovalEmail(appointment, token) {
 }
 
 async function sendClientApprovalEmail(appointment) {
-    if (!emailTransporter) {
+    const transporter = getEmailTransporter();
+    
+    if (!transporter) {
         console.warn('⚠️  Email not sent - transporter not configured');
         return { success: false, message: 'Email not configured' };
     }
 
     try {
-        await emailTransporter.sendMail({
+        await transporter.sendMail({
             from: `"${SALON_CONFIG.name}" <${process.env.SMTP_USER}>`,
             to: appointment.email,
             subject: `✅ Appointment Confirmed - ${SALON_CONFIG.name}`,
@@ -577,13 +592,15 @@ async function sendClientApprovalEmail(appointment) {
 }
 
 async function sendClientDeclineEmail(appointment) {
-    if (!emailTransporter) {
+    const transporter = getEmailTransporter();
+    
+    if (!transporter) {
         console.warn('⚠️  Email not sent - transporter not configured');
         return { success: false, message: 'Email not configured' };
     }
 
     try {
-        await emailTransporter.sendMail({
+        await transporter.sendMail({
             from: `"${SALON_CONFIG.name}" <${process.env.SMTP_USER}>`,
             to: appointment.email,
             subject: `📅 Appointment Update - ${SALON_CONFIG.name}`,
@@ -1119,8 +1136,8 @@ function getConfirmationPageHTML(action, token, appointment) {
 // START SERVER
 // ============================================
 app.listen(PORT, async () => {
-    // Initialize email transporter
-    emailTransporter = initializeEmailTransporter();
+    // Initialize email transporter for local development
+    const transporter = getEmailTransporter();
     
     const googleSheetsStatus = GOOGLE_SHEETS_WEBHOOK_URL ? 'Configured ✅' : 'Not configured ⚠️';
     
@@ -1143,7 +1160,7 @@ app.listen(PORT, async () => {
 ║   • GET  /api/decline/:token   - Decline appointment              ║
 ║   • GET  /api/appointments     - Info about appointments          ║
 ║                                                                   ║
-║   📧 Email: ${emailTransporter ? 'Configured ✅' : 'Not configured ⚠️'}
+║   📧 Email: ${transporter ? 'Configured ✅' : 'Not configured ⚠️'}
 ║                                                                   ║
 ╚═══════════════════════════════════════════════════════════════════╝
     `);
