@@ -107,8 +107,16 @@ function initializeEmailTransporter() {
 // PENDING APPOINTMENTS STORAGE (JSON)
 // ============================================
 function loadPendingAppointments() {
-    // Removed file-based pending appointments storage. Now handled via Google Sheets.
-    return {};
+    try {
+        if (!fs.existsSync(PENDING_FILE)) {
+            return {};
+        }
+        const data = fs.readFileSync(PENDING_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error('Error loading pending appointments:', error);
+        return {};
+    }
 }
 
 function savePendingAppointments(appointments) {
@@ -977,7 +985,8 @@ function getConfirmationPageHTML(action, token, appointment) {
     const title = isApprove ? 'Confirm Appointment Approval' : 'Confirm Appointment Decline';
     const buttonText = isApprove ? '✅ Confirm Approval' : '❌ Confirm Decline';
     const buttonColor = isApprove ? '#4caf50' : '#f44336';
-    const actionUrl = `${BASE_URL}/api/${action}/${token}`;
+    // Use relative URL instead of absolute to work on any domain
+    const actionUrl = `/api/${action}/${token}`;
     
     return `
 <!DOCTYPE html>
