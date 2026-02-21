@@ -1,6 +1,6 @@
 # Google Sheets Integration Setup
 
-This guide will help you set up Google Sheets to store approved appointment data.
+This guide will help you set up Google Sheets to store appointment data (both pending and approved).
 
 ## Step 1: Create a Google Sheet
 
@@ -18,7 +18,9 @@ This guide will help you set up Google Sheets to store approved appointment data
    - H1: `Notes`
    - I1: `Confirmation ID`
    - J1: `Status`
-   - K1: `Approved At`
+   - K1: `Token`
+   - L1: `Created At`
+   - M1: `Updated At`
 
 ## Step 2: Create Google Apps Script
 
@@ -34,25 +36,40 @@ function doPost(e) {
     // Get the active spreadsheet and first sheet
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     
-    // Append a new row with the appointment data
-    sheet.appendRow([
-      data.name || '',
-      data.phone || '',
-      data.email || '',
-      data.date || '',
-      data.time || '',
-      data.service || '',
-      data.location || '',
-      data.notes || '',
-      data.confirmationId || '',
-      data.status || 'Approved',
-      data.approvedAt || new Date().toISOString()
-    ]);
+    // Check if this token already exists (for updates)
+    var token = data.token || '';
+    var existingRow = findRowByToken(sheet, token);
     
-    // Return success response
-    return ContentService
-      .createTextOutput(JSON.stringify({ success: true, message: 'Data saved successfully' }))
-      .setMimeType(ContentService.MimeType.JSON);
+    if (existingRow > 0) {
+      // Update existing row
+      sheet.getRange(existingRow, 10).setValue(data.status || 'Approved'); // Status column
+      sheet.getRange(existingRow, 13).setValue(data.updatedAt || new Date().toISOString()); // Updated At
+      
+      return ContentService
+        .createTextOutput(JSON.stringify({ success: true, message: 'Status updated successfully' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } else {
+      // Append a new row with the appointment data
+      sheet.appendRow([
+        data.name || '',
+        data.phone || '',
+        data.email || '',
+        data.date || '',
+        data.time || '',
+        data.service || '',
+        data.location || '',
+        data.notes || '',
+        data.confirmationId || '',
+        data.status || 'Pending',
+        data.token || '',
+        data.createdAt || new Date().toISOString(),
+        data.updatedAt || new Date().toISOString()
+      ]);
+      
+      return ContentService
+        .createTextOutput(JSON.stringify({ success: true, message: 'Data saved successfully' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
       
   } catch (error) {
     // Return error response
@@ -60,6 +77,19 @@ function doPost(e) {
       .createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+// Find row by token
+function findRowByToken(sheet, token) {
+  if (!token) return -1;
+  
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) { // Start from 1 to skip header
+    if (data[i][10] === token) { // Column K (index 10) is Token
+      return i + 1; // Return 1-based row number
+    }
+  }
+  return -1;
 }
 
 // Test function to verify the script works
