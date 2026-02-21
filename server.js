@@ -183,21 +183,22 @@ async function saveAppointmentToGoogleSheets(appointment, status = 'Approved') {
     }
 
     try {
+        // Payload formatted for simplified Google Sheets display
         const payload = {
             name: appointment.name || '',
-            phone: appointment.phone || '',
             email: appointment.email || '',
+            phone: appointment.phone || '',
+            location: appointment.place || '',
             date: appointment.date || '',
             time: appointment.time || '',
             service: appointment.service || '',
-            location: appointment.place || '',
             notes: appointment.notes || '',
-            confirmationId: appointment.confirmationId || '',
             status: status,
             token: appointment.token || '',
-            createdAt: appointment.createdAt || new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            confirmationId: appointment.confirmationId || ''
         };
+
+        console.log(`📊 Sending to Google Sheets - Confirmation: ${payload.confirmationId}, Status: ${status}, Token: ${payload.token ? payload.token.substring(0, 8) + '...' : 'missing'}`);
 
         const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
             method: 'POST',
@@ -214,16 +215,16 @@ async function saveAppointmentToGoogleSheets(appointment, status = 'Approved') {
         try {
             const jsonResult = JSON.parse(result);
             if (jsonResult.success) {
-                console.log(`📊 Saved appointment to Google Sheets: ${appointment.confirmationId} (Status: ${status})`);
+                console.log(`✅ Google Sheets response: ${jsonResult.message || 'Success'} - ${appointment.confirmationId} (Status: ${status})`);
                 return { success: true };
             } else {
-                console.error('Google Sheets error:', jsonResult.error);
+                console.error('❌ Google Sheets error:', jsonResult.error);
                 return { success: false, error: jsonResult.error };
             }
         } catch {
             // If response isn't JSON, check if it was successful based on status
             if (response.ok) {
-                console.log(`📊 Saved appointment to Google Sheets: ${appointment.confirmationId} (Status: ${status})`);
+                console.log(`✅ Saved to Google Sheets: ${appointment.confirmationId} (Status: ${status})`);
                 return { success: true };
             }
             throw new Error('Invalid response from Google Sheets');
@@ -876,10 +877,10 @@ app.post('/api/approve/:token', async (req, res) => {
         // Update status to approved
         updatePendingAppointmentStatus(token, 'approved');
         
-        // Save to Google Sheets (cloud storage)
-        const sheetsResult = await saveAppointmentToGoogleSheets(appointment);
+        // Update status in Google Sheets (will find existing row by token and update)
+        const sheetsResult = await saveAppointmentToGoogleSheets(appointment, 'Approved');
         if (!sheetsResult.success) {
-            console.warn('⚠️  Failed to save to Google Sheets:', sheetsResult.error);
+            console.warn('⚠️  Failed to update status in Google Sheets:', sheetsResult.error);
         }
         
         // Send confirmation email to client
