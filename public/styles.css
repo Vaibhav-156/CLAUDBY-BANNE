@@ -345,15 +345,52 @@ body {
 }
 
 .banner-placeholder {
-    width: 100%;
-    height: 400px;
-    background: linear-gradient(45deg, var(--soft-pink), var(--lavender), var(--nude));
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 4px solid var(--primary-pink);
-    position: relative;
+        width: 100%;
+        min-height: 220px;
+        height: 38vw;
+        max-height: 400px;
+        background: url('nailart-banner.png') center center/cover no-repeat;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 4px solid var(--primary-pink);
+        position: relative;
+}
+
+@media (max-width: 900px) {
+    .banner-placeholder {
+        min-height: 140px;
+        height: 32vw;
+        max-height: 260px;
+        background-position: center 30%;
+    }
+    .banner-logo {
+        width: 90px;
+        height: 90px;
+    }
+    .banner-text {
+        font-size: 1.7rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .banner-placeholder {
+        min-height: 80px;
+        height: 28vw;
+        max-height: 140px;
+        background-position: center 40%;
+    }
+    .banner-logo {
+        width: 60px;
+        height: 60px;
+    }
+    .banner-text {
+        font-size: 1.1rem;
+    }
+    .banner-content {
+        padding: 8px 0;
+    }
 }
 
 .banner-placeholder::before {
@@ -406,8 +443,9 @@ body {
 
 .banner-subtext {
     font-size: 1.1rem;
-    color: #7a6a7a;
+    color: #000;
     font-weight: 300;
+    margin-top: 12px;
 }
 
 .banner-image-note {
