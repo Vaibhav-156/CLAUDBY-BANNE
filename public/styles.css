@@ -255,7 +255,6 @@ body {
 ============================================ */
 .hero-section {
     width: 100%;
-    min-height: 400px;
     background: linear-gradient(135deg, var(--primary-pink) 0%, var(--lavender) 50%, var(--soft-pink) 100%);
     display: flex;
     align-items: center;
@@ -360,9 +359,8 @@ body {
 
 @media (max-width: 900px) {
     .banner-placeholder {
-        min-height: 140px;
+        min-height: 180px;
         height: 32vw;
-        max-height: 260px;
         background-position: center 30%;
     }
     .banner-logo {
@@ -377,13 +375,12 @@ body {
 @media (max-width: 600px) {
     .banner-placeholder {
         min-height: 80px;
-        height: 28vw;
-        max-height: 140px;
+        height: 25vw;
         background-position: center 40%;
     }
     .banner-logo {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
     }
     .banner-text {
         font-size: 1.1rem;
@@ -430,7 +427,7 @@ body {
                 0 4px 15px rgba(248, 180, 196, 0.4);
     border: 4px solid var(--white);
     background: linear-gradient(135deg, var(--light-pink), var(--primary-pink));
-    padding: 5px;
+    /* padding: 5px; */
 }
 
 .banner-text {
@@ -909,8 +906,8 @@ body {
     }
     
     .banner-logo {
-        width: 90px;
-        height: 90px;
+        width: 80px;
+        height: 80px;
     }
     
     .banner-subtext {
@@ -952,7 +949,7 @@ body {
 }
 
 /* Large Mobile (480px - 599px) */
-@media (min-width: 480px) and (max-width: 599px) {
+@media (min-width: 100px) and (max-width: 599px) {
     .banner-placeholder {
         height: 280px;
     }
@@ -1112,8 +1109,7 @@ body {
     }
 }
 
-/* Small Mobile (320px - 359px) */
-@media (max-width: 359px) {
+@media (max-width: 100px) {
     .banner-placeholder {
         height: 220px;
     }
