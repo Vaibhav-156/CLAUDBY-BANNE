@@ -1,286 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#f8b4c4">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="description" content="Clawed up Glam - Book your nail salon appointment online">
-    <title>Clawed up Glam - Book Your Appointment</title>
-    
-   
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-   
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    
-    
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Clawedup by Glam – Premium Nail Care. Book your appointment today." />
+  <title>Clawedup by Glam – Nail Care</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Font Awesome Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <style>
+    /* ============================================================
+       CSS RESET & CUSTOM PROPERTIES
+    ============================================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --blush:        #f2dbd8;
+      --blush-dark:   #e8ccc8;
+      --navy:         #1c2d4f;
+      --rose-italic:  #a3304a;
+      --burgundy:     #7a0c2e;
+      --burgundy-hov: #5e0823;
+      --text-body:    #3a3a3a;
+      --text-light:   #6b6b6b;
+      --white:        #ffffff;
+      --radius:       12px;
+      --shadow:       0 16px 48px rgba(100, 30, 50, 0.14);
+      --transition:   all 0.3s ease;
+      --font-serif:   'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+      --font-sans:    'Poppins', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--blush);
+      color: var(--navy);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    img  { max-width: 100%; display: block; }
+    a    { text-decoration: none; color: inherit; }
+
+    /* ============================================================
+       NAVBAR
+    ============================================================ */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: var(--blush);
+      padding: 0 5%;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(160, 80, 100, 0.12);
+    }
+
+    /* Logo */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--burgundy), #c04070);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(122, 12, 46, 0.3);
+      flex-shrink: 0;
+    }
+
+    .logo-text        { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-name        { font-family: var(--font-serif); font-size: 1rem; font-weight: 700; letter-spacing: 0.3px; }
+    .logo-sub         { font-size: 0.58rem; font-weight: 400; color: var(--rose-italic); text-transform: uppercase; letter-spacing: 2.2px; }
+
+    /* Nav Links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.4rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      position: relative;
+      padding-bottom: 3px;
+      transition: color 0.25s;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--burgundy);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover            { color: var(--burgundy); }
+    .nav-links a:hover::after     { width: 100%; }
+
+    /* Social Icons */
+    .nav-socials {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-shrink: 0;
+    }
+
+    .nav-socials a {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      font-size: 0.82rem;
+      color: var(--navy);
+      background: rgba(122, 12, 46, 0.07);
+      transition: var(--transition);
+    }
+
+    .nav-socials a:hover {
+      background: var(--burgundy);
+      color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(122, 12, 46, 0.28);
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+      z-index: 110;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--navy);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile Drawer */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 72px; left: 0; right: 0;
+      background: var(--blush);
+      padding: 1.5rem 6% 2rem;
+      border-bottom: 1px solid rgba(160, 80, 100, 0.15);
+      z-index: 99;
+      box-shadow: 0 8px 24px rgba(100, 30, 50, 0.1);
+    }
+
+    .mobile-menu.active { display: block; }
+
+    .mobile-menu ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .mobile-menu ul a {
+      font-size: 0.88rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--navy);
+      transition: color 0.25s;
+    }
+
+    .mobile-menu ul a:hover { color: var(--burgundy); }
+
+    .mobile-socials { display: flex; gap: 0.75rem; }
+
+    .mobile-socials a {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(122, 12, 46, 0.08);
+      border-radius: 50%;
+      color: var(--navy);
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .mobile-socials a:hover {
+      background: var(--burgundy);
+      color: var(--white);
+    }
+
+    /* ============================================================
+       HERO SECTION  –  two-column grid
+    ============================================================ */
+    .hero {
+      min-height: calc(100vh - 72px);
+      padding: 5% 5% 4%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      max-width: 1260px;
+      margin: 0 auto;
+    }
+
+    /* ── LEFT: text ── */
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .hero-subtitle {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--rose-italic);
+      letter-spacing: 0.5px;
+    }
+
+    .accent-bar {
+      width: 46px; height: 2px;
+      background: linear-gradient(to right, var(--rose-italic), transparent);
+      border-radius: 2px;
+      margin-top: -0.8rem;
+    }
+
+    .hero-heading {
+      font-family: var(--font-serif);
+      font-size: clamp(2.4rem, 4.2vw, 3.8rem);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.08;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-heading span { display: block; }
+
+    .hero-paragraph {
+      font-size: 0.97rem;
+      color: var(--text-body);
+      font-weight: 300;
+      max-width: 380px;
+      line-height: 1.75;
+    }
+
+    /* CTA Button */
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background-color: var(--burgundy);
+      color: var(--white);
+      padding: 0.85rem 2rem;
+      font-family: var(--font-sans);
+      font-size: 0.87rem;
+      font-weight: 500;
+      letter-spacing: 0.6px;
+      border: 2px solid var(--burgundy);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+      align-self: flex-start;
+    }
+
+    .hero-btn i { font-size: 0.73rem; transition: transform 0.3s ease; }
+
+    .hero-btn:hover {
+      background-color: var(--burgundy-hov);
+      border-color: var(--burgundy-hov);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(122, 12, 46, 0.32);
+    }
+
+    .hero-btn:hover i  { transform: translateX(4px); }
+    .hero-btn:active   { transform: translateY(0); }
+
+    /* ── RIGHT: image ── */
+    .hero-image-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-blob {
+      position: absolute;
+      inset: -28px;
+      background: radial-gradient(ellipse 65% 75% at 58% 50%, rgba(192, 64, 112, 0.09) 0%, transparent 70%);
+      border-radius: 60% 40% 70% 30% / 50% 60% 40% 55%;
+      z-index: 0;
+      animation: blobFloat 8s ease-in-out infinite;
+    }
+
+    @keyframes blobFloat {
+      0%,100% { transform: scale(1) rotate(0deg); }
+      40%     { transform: scale(1.04) rotate(2.5deg); }
+      70%     { transform: scale(0.97) rotate(-1.5deg); }
+    }
+
+    .hero-image-frame {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 520px;
+      aspect-ratio: 4 / 5;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.65s ease;
+    }
+
+    .hero-image-frame:hover img { transform: scale(1.045); }
+
+    /* Floating badge */
+    .image-badge {
+      position: absolute;
+      bottom: -16px;
+      left: -16px;
+      z-index: 2;
+      width: 88px; height: 88px;
+      background: var(--burgundy);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(122, 12, 46, 0.38);
+    }
+
+    .badge-num  { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; line-height: 1; }
+    .badge-text { font-size: 0.44rem; font-family: var(--font-sans); font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; line-height: 1.4; margin-top: 2px; }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .site-footer {
+      text-align: center;
+      padding: 1.6rem 5%;
+      font-size: 0.78rem;
+      color: var(--text-light);
+      border-top: 1px solid rgba(160, 80, 100, 0.12);
+      background: var(--blush-dark);
+      letter-spacing: 0.3px;
+    }
+
+    .site-footer a           { color: var(--burgundy); font-weight: 500; }
+    .site-footer a:hover     { text-decoration: underline; }
+
+    /* ============================================================
+       RESPONSIVE — TABLET  (≤ 900px)
+    ============================================================ */
+    @media (max-width: 900px) {
+      .nav-links,
+      .nav-socials     { display: none; }
+      .hamburger       { display: flex; }
+
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        gap: 2.5rem;
+        padding: 6% 6% 5%;
+      }
+
+      .hero-image-wrap  { order: -1; }
+
+      .hero-image-frame {
+        max-width: 400px;
+        margin: 0 auto;
+        aspect-ratio: 1 / 1.1;
+      }
+
+      .hero-paragraph   { max-width: 100%; }
+      .hero-btn         { align-self: flex-start; }
+    }
+
+    /* ============================================================
+       RESPONSIVE — MOBILE  (≤ 560px)
+    ============================================================ */
+    @media (max-width: 560px) {
+      .navbar          { padding: 0 4%; height: 64px; }
+      .mobile-menu     { top: 64px; }
+
+      .hero            { padding: 8% 5% 6%; gap: 2rem; }
+
+      .hero-image-frame {
+        max-width: 100%;
+        aspect-ratio: 1 / 1.05;
+      }
+
+      .hero-heading    { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+      .hero-subtitle   { font-size: 1rem; }
+      .hero-paragraph  { font-size: 0.88rem; }
+
+      .hero-btn {
+        align-self: stretch;
+        justify-content: center;
+        padding: 0.85rem 1.5rem;
+      }
+
+      .image-badge     { width: 72px; height: 72px; bottom: -12px; left: -10px; }
+      .badge-num       { font-size: 1.2rem; }
+    }
+
+    /* ============================================================
+       ENTRANCE ANIMATIONS
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-subtitle   { animation: fadeUp 0.55s ease 0.1s both; }
+    .accent-bar      { animation: fadeUp 0.55s ease 0.2s both; }
+    .hero-heading    { animation: fadeUp 0.55s ease 0.3s both; }
+    .hero-paragraph  { animation: fadeUp 0.55s ease 0.42s both; }
+    .hero-btn        { animation: fadeUp 0.55s ease 0.55s both; }
+    .hero-image-wrap { animation: fadeUp 0.7s  ease 0.15s both; }
+  </style>
 </head>
 <body>
-    <!-- Space Background with Twinkling Stars -->
-    <div class="stars-container" id="starsContainer"></div>
-    <div class="interactive-bg">
-        <!-- Floating Nail Polish Bottles -->
-        <div class="nail-polish bottle-1">💅</div>
-        <div class="nail-polish bottle-2">💅</div>
-        <div class="nail-polish bottle-3">💅</div>
-        <div class="nail-polish bottle-4">💅</div>
-        <div class="nail-polish bottle-5">💅</div>
-        <div class="nail-polish bottle-6">💅</div>
-        <!-- Sparkles -->
-        <div class="sparkle sparkle-1">✨</div>
-        <div class="sparkle sparkle-2">✨</div>
-        <div class="sparkle sparkle-3">✨</div>
-        <div class="sparkle sparkle-4">✨</div>
-        <div class="sparkle sparkle-5">✨</div>
-        <div class="sparkle sparkle-6">✨</div>
-        <div class="sparkle sparkle-7">✨</div>
-        <div class="sparkle sparkle-8">✨</div>
-        <!-- Nail Art Elements -->
-        <div class="nail-art art-1">🌸</div>
-        <div class="nail-art art-2">🌺</div>
-        <div class="nail-art art-3">🌼</div>
-        <div class="nail-art art-4">🌷</div>
-        <!-- Glitter Particles (generated by JS) -->
-        <div class="glitter-container" id="glitterContainer"></div>
+
+  <!-- ============================================================
+       NAVIGATION BAR
+  ============================================================ -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+
+    <!-- Logo -->
+    <a href="index.html" class="nav-logo" aria-label="Clawedup by Glam – Home">
+      <div class="logo-icon" aria-hidden="true">
+        <i class="fa-solid fa-spa"></i>
+      </div>
+      <div class="logo-text">
+        <span class="logo-name">Clawedup by Glam</span>
+        <span class="logo-sub">Nail Care</span>
+      </div>
+    </a>
+
+    <!-- Desktop Nav Links -->
+    <ul class="nav-links" role="list">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="booking.html">Manicure</a></li>
+      <li><a href="booking.html">Pedicure</a></li>
+      <li><a href="#contacts">Contacts</a></li>
+    </ul>
+
+    <!-- Desktop Social Icons -->
+    <div class="nav-socials" aria-label="Follow us on social media">
+      <a href="#" aria-label="Facebook"  target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+      <a href="#" aria-label="Twitter / X" target="_blank" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
+      <a href="#" aria-label="YouTube"   target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
     </div>
 
-    <!-- ============================================
-         HERO/BANNER SECTION
-    ============================================ -->
-    <header class="hero-section">
-        <div class="banner-placeholder">
-            <div class="banner-content">
-                <img src="logo.png" alt="Clawed up Glam Logo" class="banner-logo">
-                <h1 class="banner-text">Clawed up Glam</h1>
-                <p class="banner-subtext">Where Beauty Meets Perfection</p>
-                <!-- Removed highlighted emojis for cleaner look -->
-            </div>
-            <div class="hero-glitter" id="heroGlitter"></div>
+    <!-- Mobile Hamburger -->
+    <button
+      class="hamburger"
+      id="hamburgerBtn"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="mobileMenu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+  </nav><!-- /navbar -->
+
+  <!-- Mobile Slide-down Drawer -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <ul role="list">
+      <li><a href="#services"     onclick="closeMenu()">Services</a></li>
+      <li><a href="#about"        onclick="closeMenu()">About</a></li>
+      <li><a href="booking.html"  onclick="closeMenu()">Manicure</a></li>
+      <li><a href="booking.html"  onclick="closeMenu()">Pedicure</a></li>
+      <li><a href="#contacts"     onclick="closeMenu()">Contacts</a></li>
+    </ul>
+    <div class="mobile-socials" aria-label="Follow us on social media">
+      <a href="#" aria-label="Facebook"  target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+      <a href="#" aria-label="Twitter / X" target="_blank" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
+      <a href="#" aria-label="YouTube"   target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       HERO SECTION
+  ============================================================ -->
+  <main>
+    <section class="hero" id="home" aria-labelledby="heroHeading">
+
+      <!-- ── Text Column ── -->
+      <div class="hero-content">
+
+        <p class="hero-subtitle">Nail care</p>
+        <div class="accent-bar" aria-hidden="true"></div>
+
+        <h1 class="hero-heading" id="heroHeading">
+          <span>ENJOY THE BEST</span>
+          <span>NAIL CARE</span>
+        </h1>
+
+        <p class="hero-paragraph">
+          Make your nails perfect right now! Experience premium nail artistry
+          crafted with precision and love — from classic manicures to
+          breathtaking nail art.
+        </p>
+
+        <a href="booking.html" class="hero-btn" role="button">
+          Book an Appointment
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+
+      </div><!-- /hero-content -->
+
+      <!-- ── Image Column ── -->
+      <div class="hero-image-wrap">
+
+        <div class="hero-blob" aria-hidden="true"></div>
+
+        <div class="hero-image-frame">
+          <!--
+            REPLACE THIS with your own salon photo.
+            Ideal size: 640 × 800 px portrait.
+            Free nail/beauty photos: https://unsplash.com/s/photos/nail-salon
+          -->
+          <img
+            src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=640&q=80"
+            alt="Elegant close-up of beautifully manicured nails"
+            loading="eager"
+            onerror="this.onerror=null;
+                     this.src='https://images.unsplash.com/photo-1604902396830-aca29e19b067?auto=format&fit=crop&w=640&q=80';"
+          />
         </div>
-    </header>
 
-    <!-- ============================================
-         MAIN CONTENT - APPOINTMENT FORM
-    ============================================ -->
-    <main class="main-content">
-        <div class="form-container">
-            <!-- Form Header -->
-            <div class="form-header">
-                <i class="fas fa-calendar-check header-icon"></i>
-                <h2>Book Your Appointment</h2>
-                <p>Schedule your perfect nail experience today!</p>
-                <!-- Removed highlighted emojis for cleaner look -->
-            </div>
-
-            <!-- Appointment Booking Form -->
-            <form id="appointmentForm" class="appointment-form" novalidate>
-
-                <div class="form-group">
-                    <label for="fullName">
-                        Full Name <span class="required">*</span>
-                    </label>
-                    <div class="input-wrapper">
-                        <input 
-                            type="text" 
-                            id="fullName" 
-                            name="fullName" 
-                            placeholder="Enter your full name"
-                            required
-                            minlength="2"
-                            autocomplete="name"
-                        >
-                        <i class="fas fa-user"></i>
-                    </div>
-                </div>
-
-                <!-- Email Field -->
-                <div class="form-group">
-                    <label for="email">
-                        Email ID <span class="required">*</span>
-                    </label>
-                    <div class="input-wrapper">
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            placeholder="Enter your email address"
-                            required
-                            autocomplete="email"
-                        >
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                </div>
-
-                <!-- Phone Number Field -->
-                <div class="form-group">
-                    <label for="phone">
-                        Phone Number <span class="required">*</span>
-                    </label>
-                    <div class="input-wrapper">
-                        <input 
-                            type="tel" 
-                            id="phone" 
-                            name="phone" 
-                            placeholder="Enter your phone number"
-                            required
-                            pattern="[0-9]{10,15}"
-                            title="Please enter a valid phone number (10-15 digits)"
-                            autocomplete="tel"
-                        >
-                        <i class="fas fa-phone"></i>
-                    </div>
-                </div>
-
-                <!-- Place/Location Field -->
-                <div class="form-group">
-                    <label for="place">
-                        Place <span class="required">*</span>
-                    </label>
-                    <div class="input-wrapper">
-                        <input 
-                            type="text" 
-                            id="place" 
-                            name="place" 
-                            placeholder="Enter your city/location"
-                            required
-                            minlength="2"
-                            autocomplete="address-level2"
-                        >
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Date and Time Row -->
-                <div class="form-row">
-                    <!-- Appointment Date Field -->
-                    <div class="form-group">
-                        <label for="appointmentDate">
-                            Appointment Date <span class="required">*</span>
-                        </label>
-                        <div class="input-wrapper">
-                            <input 
-                                type="date" 
-                                id="appointmentDate" 
-                                name="appointmentDate" 
-                                required
-                            >
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                    </div>
-
-                    <!-- Appointment Time Field -->
-                    <div class="form-group">
-                        <label for="appointmentTime">
-                            Appointment Time <span class="required">*</span>
-                        </label>
-                        <div class="input-wrapper">
-                            <input 
-                                type="time" 
-                                id="appointmentTime" 
-                                name="appointmentTime" 
-                                required
-                                min="09:00"
-                                max="20:00"
-                            >
-                            <i class="fas fa-clock"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Type Field -->
-                <div class="form-group">
-                    <label for="serviceType">
-                        Service Type
-                    </label>
-                    <div class="input-wrapper">
-                        <select 
-                            id="serviceType" 
-                            name="serviceType"
-                        >
-                            <option value="">Select a service (optional)</option>
-                            
-                            <optgroup label="ON NATURAL">
-                                <option value="Dry Russian Manicure - ₹399">Dry Russian Manicure - ₹399</option>
-                                <option value="Dry Russian Mani + Gel Polish - ₹599">Dry Russian Mani + Gel Polish - ₹599</option>
-                                <option value="Builder Gel Overlay (Short) - ₹999">Builder Gel Overlay (Short) - ₹999</option>
-                                <option value="Builder Gel Overlay (Medium) - ₹1,099">Builder Gel Overlay (Medium) - ₹1,099</option>
-                                <option value="Builder Gel Overlay (Long) - ₹1,299">Builder Gel Overlay (Long) - ₹1,299</option>
-                            </optgroup>
-                            
-                            <optgroup label="GEL X EXTENSION (PERMANENT)">
-                                <option value="Gel-X Extension (Short) - ₹1,099">Gel-X Extension (Short) - ₹1,099</option>
-                                <option value="Gel-X Extension (Medium) - ₹1,299">Gel-X Extension (Medium) - ₹1,299</option>
-                                <option value="Gel-X Extension (Long) - ₹1,499">Gel-X Extension (Long) - ₹1,499</option>
-                            </optgroup>
-                            
-                            <optgroup label="TIP + BUILDGEL (PERMANENT)">
-                                <option value="Tip + Builder (Short) - ₹999">Tip + Builder (Short) - ₹999</option>
-                                <option value="Tip + Builder (Medium) - ₹1,299">Tip + Builder (Medium) - ₹1,299</option>
-                                <option value="Tip + Builder (Long) - ₹1,600">Tip + Builder (Long) - ₹1,600</option>
-                            </optgroup>
-                            
-                            <optgroup label="ADD ONS">
-                                <option value="Cat Eye (Full Set) - ₹399">Cat Eye (Full Set) - ₹399</option>
-                                <option value="Cat Eye (Per Nail) - ₹70">Cat Eye (Per Nail) - ₹70</option>
-                                <option value="Chrome (Full Set) - ₹350">Chrome (Full Set) - ₹350</option>
-                                <option value="Chrome (Per Nail) - ₹70">Chrome (Per Nail) - ₹70</option>
-                                <option value="Brush Art (Per Nail) - ₹50">Brush Art (Per Nail) - ₹50</option>
-                                <option value="Shell Art (Per Nail) - ₹98">Shell Art (Per Nail) - ₹98</option>
-                                <option value="Charm (Per Nail) - ₹79">Charm (Per Nail) - ₹79</option>
-                                <option value="Colored French - ₹299">Colored French - ₹299</option>
-                                <option value="Chrome French - ₹350">Chrome French - ₹350</option>
-                                <option value="Rose Glow Spa Manicure - ₹499">Rose Glow Spa Manicure - ₹499</option>
-                            </optgroup>
-                            
-                            <option value="Other">Other (Specify in notes)</option>
-                        </select>
-                        <i class="fas fa-spa"></i>
-                    </div>
-                </div>
-
-                <!-- Additional Notes Field -->
-                <div class="form-group">
-                    <label for="additionalNotes">
-                        Additional Notes
-                    </label>
-                    <div class="input-wrapper textarea-wrapper">
-                        <textarea 
-                            id="additionalNotes" 
-                            name="additionalNotes" 
-                            placeholder="Any special requests or notes (optional)"
-                            rows="3"
-                            maxlength="500"
-                        ></textarea>
-                        <i class="fas fa-comment-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="submit-btn">
-                    <span>Book Appointment</span>
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-            </form>
+        <!-- Circular badge overlay -->
+        <div class="image-badge" aria-label="5-star rated nail salon">
+          <span class="badge-num">5★</span>
+          <span class="badge-text">Rated<br>Salon</span>
         </div>
-    </main>
 
+      </div><!-- /hero-image-wrap -->
 
-    <footer class="footer">
-        <p>Made with <i class="fas fa-heart"></i> for Clawed up Glam <span style="font-size:1.2rem;color:#d72660;">💅</span></p>
-    </footer>
+    </section>
+  </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <!-- Custom JavaScript -->
-    <script src="script.js"></script>
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="site-footer" id="contacts">
+    <p>
+      &copy; 2025 <strong>Clawedup by Glam</strong> &mdash; Nail Care
+      &nbsp;|&nbsp;
+      <a href="booking.html">Book an Appointment</a>
+    </p>
+  </footer>
+
+  <!-- ============================================================
+       JAVASCRIPT — Hamburger Menu Toggle
+  ============================================================ -->
+  <script>
+    (function () {
+      const btn  = document.getElementById('hamburgerBtn');
+      const menu = document.getElementById('mobileMenu');
+
+      function openMenu() {
+        btn.classList.add('open');
+        menu.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+        menu.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeMenu() {
+        btn.classList.remove('open');
+        menu.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+      }
+
+      // expose for inline onclick
+      window.closeMenu = closeMenu;
+
+      btn.addEventListener('click', function () {
+        menu.classList.contains('active') ? closeMenu() : openMenu();
+      });
+
+      // click outside → close
+      document.addEventListener('click', function (e) {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+          closeMenu();
+        }
+      });
+
+      // Escape key → close
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menu.classList.contains('active')) {
+          closeMenu();
+          btn.focus();
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html>
