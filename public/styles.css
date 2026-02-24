@@ -2,14 +2,14 @@
    CSS VARIABLES & RESET
 ============================================ */
 :root {
-    --primary-pink: #f8b4c4;
-    --soft-pink: #fce4ec;
-    --lavender: #e8d5f2;
+    --primary-pink: #e8ccc8;
+    --soft-pink: #f2dbd8;
+    --lavender: #e8ccc8;
     --nude: #f5e6e0;
     --white: #ffffff;
-    --dark-text: #5a4a5a;
-    --accent-pink: #e91e63;
-    --shadow: rgba(248, 180, 196, 0.3);
+    --dark-text: #1c2d4f;
+    --accent-pink: #7a0c2e;
+    --shadow: rgba(100, 30, 50, 0.14);
     --transition: all 0.3s ease;
 }
 
@@ -25,7 +25,7 @@ html {
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #000000;
+    background-color: #f2dbd8;
     min-height: 100vh;
     color: var(--dark-text);
     line-height: 1.6;
@@ -103,9 +103,9 @@ body {
 .nail-polish {
     position: absolute;
     font-size: 2.5rem;
-    opacity: 0.6;
+    opacity: 0.4;
     animation: floatNailPolish 15s ease-in-out infinite;
-    filter: drop-shadow(0 5px 15px rgba(233, 30, 99, 0.3));
+    filter: drop-shadow(0 5px 15px rgba(122, 12, 46, 0.2));
     cursor: pointer;
     pointer-events: auto;
     transition: transform 0.3s ease, opacity 0.3s ease;
@@ -255,7 +255,7 @@ body {
 ============================================ */
 .hero-section {
     width: 100%;
-    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--lavender) 50%, var(--soft-pink) 100%);
+    background: linear-gradient(135deg, #e8ccc8 0%, #f2dbd8 50%, #edd6d2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -348,12 +348,12 @@ body {
         min-height: 220px;
         height: 38vw;
         max-height: 400px;
-        background: url('nailart-banner.png') center center/cover no-repeat;
+        background: url('nailart-banner.jpg') center top/cover no-repeat;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border-bottom: 4px solid var(--primary-pink);
+        border-bottom: 4px solid #7a0c2e;
         position: relative;
 }
 
@@ -361,7 +361,7 @@ body {
     .banner-placeholder {
         min-height: 180px;
         height: 32vw;
-        background-position: center 30%;
+        background-position: center top;
     }
     .banner-logo {
         width: 90px;
@@ -376,7 +376,7 @@ body {
     .banner-placeholder {
         min-height: 80px;
         height: 25vw;
-        background-position: center 40%;
+        background-position: center top;
     }
     .banner-logo {
         width: 80px;
@@ -410,7 +410,7 @@ body {
 
 .banner-icon {
     font-size: 4rem;
-    color: var(--accent-pink);
+    color: #7a0c2e;
     margin-bottom: 15px;
     animation: pulse 2s infinite;
 }
@@ -423,10 +423,10 @@ body {
     object-fit: cover;
     margin-bottom: 15px;
     animation: pulse 2s infinite;
-    box-shadow: 0 8px 30px rgba(233, 30, 99, 0.3),
-                0 4px 15px rgba(248, 180, 196, 0.4);
+    box-shadow: 0 8px 30px rgba(122, 12, 46, 0.3),
+                0 4px 15px rgba(232, 204, 200, 0.5);
     border: 4px solid var(--white);
-    background: linear-gradient(135deg, var(--light-pink), var(--primary-pink));
+    background: linear-gradient(135deg, #f2dbd8, #e8ccc8);
     /* padding: 5px; */
 }
 
@@ -477,7 +477,7 @@ body {
     left: 0;
     right: 0;
     height: 5px;
-    background: linear-gradient(90deg, var(--primary-pink), var(--lavender), var(--accent-pink));
+    background: linear-gradient(90deg, #e8ccc8, #7a0c2e, #e8ccc8);
 }
 
 .form-header {
@@ -499,7 +499,7 @@ body {
 
 .form-header .header-icon {
     font-size: 2.5rem;
-    color: var(--accent-pink);
+    color: #7a0c2e;
     margin-bottom: 15px;
 }
 
@@ -525,7 +525,7 @@ body {
 }
 
 .form-group label .required {
-    color: var(--accent-pink);
+    color: #7a0c2e;
     margin-left: 3px;
 }
 
@@ -558,8 +558,8 @@ body {
 }
 
 .form-group input:focus {
-    border-color: var(--primary-pink);
-    box-shadow: 0 0 0 4px rgba(248, 180, 196, 0.2);
+    border-color: #7a0c2e;
+    box-shadow: 0 0 0 4px rgba(122, 12, 46, 0.12);
 }
 
 .form-group input:focus + i,
@@ -602,8 +602,8 @@ body {
 }
 
 .form-group select:focus {
-    border-color: var(--primary-pink);
-    box-shadow: 0 0 0 4px rgba(248, 180, 196, 0.2);
+    border-color: #7a0c2e;
+    box-shadow: 0 0 0 4px rgba(122, 12, 46, 0.12);
 }
 
 .form-group select:focus + i,
@@ -619,8 +619,8 @@ body {
 /* Service category groups styling */
 .form-group select optgroup {
     font-weight: 600;
-    color: var(--accent-pink);
-    background-color: #fce4ec;
+    color: #7a0c2e;
+    background-color: #f2dbd8;
     padding: 8px;
     font-size: 0.95rem;
 }
@@ -650,8 +650,8 @@ body {
 }
 
 .form-group textarea:focus {
-    border-color: var(--primary-pink);
-    box-shadow: 0 0 0 4px rgba(248, 180, 196, 0.2);
+    border-color: #7a0c2e;
+    box-shadow: 0 0 0 4px rgba(122, 12, 46, 0.12);
 }
 
 .form-group textarea:focus + i,
@@ -680,7 +680,7 @@ body {
    SUBMIT BUTTON
 ============================================ */
 .submit-btn {
-    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--accent-pink) 100%);
+    background: linear-gradient(135deg, #7a0c2e 0%, #5e0823 100%);
     color: var(--white);
     border: none;
     padding: 18px 40px;
@@ -695,12 +695,12 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+    box-shadow: 0 8px 25px rgba(122, 12, 46, 0.3);
 }
 
 .submit-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
+    box-shadow: 0 12px 35px rgba(122, 12, 46, 0.45);
 }
 
 .submit-btn:active {
@@ -722,12 +722,14 @@ body {
 .footer {
     text-align: center;
     padding: 30px 20px;
-    color: var(--dark-text);
+    color: #6b6b6b;
     font-size: 0.9rem;
+    border-top: 1px solid rgba(160, 80, 100, 0.12);
+    background: #e8ccc8;
 }
 
 .footer i {
-    color: var(--accent-pink);
+    color: #7a0c2e;
     animation: heartbeat 1.5s infinite;
 }
 
