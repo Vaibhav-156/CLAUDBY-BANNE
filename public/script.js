@@ -3,37 +3,7 @@
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
     
-    // ============================================
-    // SPACE BACKGROUND - TWINKLING STARS
-    // ============================================
-    const starsContainer = document.getElementById('starsContainer');
-    
-    function createStars() {
-        const starCount = 200; // Number of stars
-        
-        for (let i = 0; i < starCount; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            
-            // Random size class
-            const sizeClasses = ['small', 'small', 'small', 'medium', 'medium', 'large'];
-            star.classList.add(sizeClasses[Math.floor(Math.random() * sizeClasses.length)]);
-            
-            // Random position
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            
-            // Random twinkle duration and delay for variation
-            const duration = 2 + Math.random() * 4; // 2-6 seconds
-            const delay = Math.random() * 5; // 0-5 seconds delay
-            star.style.setProperty('--twinkle-duration', duration + 's');
-            star.style.animationDelay = delay + 's';
-            
-            starsContainer.appendChild(star);
-        }
-    }
-    
-    createStars();
+
     
     // Get form element
     const appointmentForm = document.getElementById('appointmentForm');
@@ -43,107 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     dateInput.setAttribute('min', today);
     
-    // ============================================
-    // INTERACTIVE BACKGROUND - GLITTER EFFECT
-    // ============================================
-    const glitterContainer = document.getElementById('glitterContainer');
+
     
-    // Create random glitter particles periodically
-    function createGlitter() {
-        const particle = document.createElement('div');
-        particle.className = 'glitter-particle';
-        
-        // Random position
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = '-10px';
-        
-        // Random size
-        const size = Math.random() * 8 + 4;
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        
-        // Random color from nail palette
-        const colors = ['#f8b4c4', '#e91e63', '#e8d5f2', '#fce4ec', '#ff69b4', '#dda0dd'];
-        particle.style.background = `radial-gradient(circle, #fff 0%, ${colors[Math.floor(Math.random() * colors.length)]} 50%, transparent 100%)`;
-        
-        // Random animation duration
-        const duration = Math.random() * 5 + 5;
-        particle.style.animationDuration = duration + 's';
-        
-        glitterContainer.appendChild(particle);
-        
-        // Remove particle after animation
-        setTimeout(() => {
-            particle.remove();
-        }, duration * 1000);
-    }
-    
-    // Create glitter every 300ms
-    setInterval(createGlitter, 300);
-    
-    // ============================================
-    // CLICK EFFECT ON BACKGROUND ELEMENTS
-    // ============================================
-    document.querySelectorAll('.nail-polish, .sparkle, .nail-art').forEach(element => {
-        element.addEventListener('click', function(e) {
-            // Create burst effect
-            for (let i = 0; i < 10; i++) {
-                const burst = document.createElement('div');
-                burst.className = 'glitter-particle';
-                burst.style.left = e.clientX + 'px';
-                burst.style.top = e.clientY + 'px';
-                burst.style.position = 'fixed';
-                burst.style.animation = 'none';
-                
-                const angle = (i / 10) * Math.PI * 2;
-                const velocity = 100 + Math.random() * 50;
-                const dx = Math.cos(angle) * velocity;
-                const dy = Math.sin(angle) * velocity;
-                
-                burst.style.transition = 'all 0.8s ease-out';
-                document.body.appendChild(burst);
-                
-                setTimeout(() => {
-                    burst.style.transform = `translate(${dx}px, ${dy}px) scale(0)`;
-                    burst.style.opacity = '0';
-                }, 10);
-                
-                setTimeout(() => burst.remove(), 800);
-            }
-        });
-    });
-    
-    // ============================================
-    // HERO SECTION GLITTER EFFECT
-    // ============================================
-    const heroGlitter = document.getElementById('heroGlitter');
-    
-    // Create static glitter particles for hero section
-    function createHeroGlitter() {
-        if (!heroGlitter) return;
-        
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'glitter-particle';
-            
-            // Random position within hero section
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = Math.random() * 100 + '%';
-            
-            // Random size
-            const size = Math.random() * 4 + 2;
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            
-            // Random animation delay for staggered effect
-            particle.style.animationDelay = Math.random() * 4 + 's';
-            particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            
-            heroGlitter.appendChild(particle);
-        }
-    }
-    
-    createHeroGlitter();
+
     
     // ============================================
     // FORM VALIDATION FUNCTIONS
