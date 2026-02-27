@@ -346,8 +346,7 @@ function getAdminApprovalEmailHTML(appointment, approveUrl, declineUrl) {
         <!-- Footer -->
         <div style="background: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eee;">
             <p style="margin: 0; color: #999; font-size: 12px;">
-                ${SALON_CONFIG.name} | ${SALON_CONFIG.address}<br>
-                ${SALON_CONFIG.phone} | ${SALON_CONFIG.email}
+                ${SALON_CONFIG.name} | ${SALON_CONFIG.email}
             </p>
         </div>
     </div>
@@ -422,7 +421,7 @@ function getClientApprovalEmailHTML(appointment) {
                 <h3 style="color: #e91e63; margin: 0 0 15px 0; font-size: 16px;">💡 Important Reminders</h3>
                 <ul style="color: #666; margin: 0; padding-left: 20px; line-height: 1.8;">
                     <li>Please arrive 10-15 minutes before your appointment time</li>
-                    <li>If you need to reschedule or cancel, please call us at ${SALON_CONFIG.phone}</li>
+                    <li>If you need to reschedule or cancel, please contact us via email</li>
                     <li>Bring this confirmation email or your confirmation number</li>
                 </ul>
             </div>
@@ -435,8 +434,7 @@ function getClientApprovalEmailHTML(appointment) {
         <!-- Footer -->
         <div style="background: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eee;">
             <p style="margin: 0; color: #999; font-size: 12px;">
-                ${SALON_CONFIG.name} | ${SALON_CONFIG.address}<br>
-                ${SALON_CONFIG.phone} | ${SALON_CONFIG.email}
+                ${SALON_CONFIG.name} | ${SALON_CONFIG.email}
             </p>
         </div>
     </div>
@@ -495,8 +493,7 @@ function getClientDeclineEmailHTML(appointment) {
                 <h3 style="color: #1976d2; margin: 0 0 15px 0; font-size: 16px;">💙 We'd Love to See You!</h3>
                 <p style="color: #666; margin: 0; line-height: 1.6;">
                     Please feel free to book another appointment at a different time. 
-                    You can also call us directly at <strong>${SALON_CONFIG.phone}</strong> 
-                    and we'll be happy to help you find a time that works!
+                    You can also reach us via email and we'll be happy to help you find a time that works!
                 </p>
             </div>
             
@@ -508,8 +505,7 @@ function getClientDeclineEmailHTML(appointment) {
         <!-- Footer -->
         <div style="background: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eee;">
             <p style="margin: 0; color: #999; font-size: 12px;">
-                ${SALON_CONFIG.name} | ${SALON_CONFIG.address}<br>
-                ${SALON_CONFIG.phone} | ${SALON_CONFIG.email}
+                ${SALON_CONFIG.name} | ${SALON_CONFIG.email}
             </p>
         </div>
     </div>
@@ -589,7 +585,7 @@ async function sendClientApprovalEmail(appointment) {
             to: appointment.email,
             subject: `✅ Appointment Confirmed - ${SALON_CONFIG.name}`,
             html: getClientApprovalEmailHTML(appointment),
-            text: `Your appointment has been confirmed!\n\nDate: ${appointment.date}\nTime: ${appointment.time}\nConfirmation #: ${appointment.confirmationId}\n\nPlease arrive 10-15 minutes early.\n\n${SALON_CONFIG.name}\n${SALON_CONFIG.phone}`
+            text: `Your appointment has been confirmed!\n\nDate: ${appointment.date}\nTime: ${appointment.time}\nConfirmation #: ${appointment.confirmationId}\n\nPlease arrive 10-15 minutes early.\n\n${SALON_CONFIG.name}`
         });
 
         console.log(`📧 Client approval email sent to ${appointment.email}`);
@@ -614,7 +610,7 @@ async function sendClientDeclineEmail(appointment) {
             to: appointment.email,
             subject: `📅 Appointment Update - ${SALON_CONFIG.name}`,
             html: getClientDeclineEmailHTML(appointment),
-            text: `Unfortunately, we are unable to accommodate your appointment request.\n\nRequested Date: ${appointment.date}\nRequested Time: ${appointment.time}\n\nPlease try booking another time or call us at ${SALON_CONFIG.phone}.\n\n${SALON_CONFIG.name}`
+            text: `Unfortunately, we are unable to accommodate your appointment request.\n\nRequested Date: ${appointment.date}\nRequested Time: ${appointment.time}\n\nPlease try booking another time or contact us via email.\n\n${SALON_CONFIG.name}`
         });
 
         console.log(`📧 Client decline email sent to ${appointment.email}`);
@@ -1066,7 +1062,6 @@ function getResponseHTML(type, title, content) {
         </div>
         <div class="footer">
             <p>${SALON_CONFIG.name}</p>
-            <p>${SALON_CONFIG.phone}</p>
         </div>
     </div>
 </body>
@@ -1177,7 +1172,6 @@ function getConfirmationPageHTML(action, token, appointment) {
         
         <div class="footer">
             <p>${SALON_CONFIG.name}</p>
-            <p>${SALON_CONFIG.phone}</p>
         </div>
     </div>
 </body>
