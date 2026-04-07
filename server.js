@@ -44,12 +44,12 @@ const SALON_CONFIG = {
     name: 'Clawed up Glam',
     phone: process.env.SALON_PHONE || '6394140862',
     address: process.env.SALON_ADDRESS || '123 Beauty Lane, Glamour City',
-    email: process.env.SALON_EMAIL || 'clawedupglambybanne@gmail.com',
+    email: process.env.SALON_EMAIL || 'clawedupglam@gmail.com',
     website: 'www.clawedupglam.com'
 };
 
 // Admin email for receiving approval requests
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'clawedupglambybanne@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'clawedupglam@gmail.com';
 
 // ============================================
 // FILE CONFIGURATION
