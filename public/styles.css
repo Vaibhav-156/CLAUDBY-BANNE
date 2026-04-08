@@ -402,6 +402,9 @@ body {
 }
 
 .banner-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     z-index: 10;
     padding: 20px;
@@ -420,14 +423,28 @@ body {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    object-fit: cover;
     margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    align-self: center;
     animation: pulse 2s infinite;
-    box-shadow: 0 8px 30px rgba(122, 12, 46, 0.3),
-                0 4px 15px rgba(232, 204, 200, 0.5);
-    border: 4px solid var(--white);
-    background: linear-gradient(135deg, #f2dbd8, #e8ccc8);
-    /* padding: 5px; */
+    box-shadow: 0 10px 25px rgba(122, 12, 46, 0.25);
+    border: none;
+    background: transparent;
+    overflow: hidden;
+}
+
+.banner-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.38);
+    transform-origin: center;
+    object-position: 46% 48%;
+    display: block;
 }
 
 .banner-text {
