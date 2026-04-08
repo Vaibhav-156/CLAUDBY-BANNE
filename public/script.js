@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set minimum date to today (prevent past date selection)
     const dateInput = document.getElementById('appointmentDate');
+    const timeSelect = document.getElementById('appointmentTime');
     const today = new Date().toISOString().split('T')[0];
     dateInput.setAttribute('min', today);
     
@@ -134,12 +135,82 @@ document.addEventListener('DOMContentLoaded', function() {
         baseUrl: '',
         endpoints: {
             bookAppointment: '/api/book-appointment',
-            checkStatus: '/api/status'
+            checkStatus: '/api/status',
+            availability: '/api/availability'
         },
         salonName: 'Clawed up Glam',
         salonPhone: '(555) 123-4567',
         salonAddress: '123 Beauty Lane, Glamour City'
     };
+
+    /**
+     * Fetch unavailable time slots for a date
+     * @param {string} dateString - Date in YYYY-MM-DD format
+     * @returns {Promise<string[]>} - Array of unavailable times
+     */
+    async function fetchUnavailableTimes(dateString) {
+        try {
+            const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.availability}?date=${encodeURIComponent(dateString)}`);
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                return [];
+            }
+
+            return Array.isArray(result.unavailableTimes) ? result.unavailableTimes : [];
+        } catch (error) {
+            console.error('Availability check error:', error);
+            return [];
+        }
+    }
+
+    function resetTimeOptions() {
+        Array.from(timeSelect.options).forEach((option) => {
+            if (!option.value) {
+                return;
+            }
+            if (!option.dataset.baseLabel) {
+                option.dataset.baseLabel = option.textContent;
+            }
+            option.disabled = false;
+            option.textContent = option.dataset.baseLabel;
+        });
+    }
+
+    function applyUnavailableTimes(unavailableTimes) {
+        const blockedTimes = new Set(unavailableTimes);
+
+        Array.from(timeSelect.options).forEach((option) => {
+            if (!option.value) {
+                return;
+            }
+            if (!option.dataset.baseLabel) {
+                option.dataset.baseLabel = option.textContent;
+            }
+
+            const isUnavailable = blockedTimes.has(option.value);
+            option.disabled = isUnavailable;
+            option.textContent = isUnavailable
+                ? `${option.dataset.baseLabel} (Booked)`
+                : option.dataset.baseLabel;
+        });
+
+        if (blockedTimes.has(timeSelect.value)) {
+            timeSelect.value = '';
+        }
+    }
+
+    async function updateTimeSlotAvailability(dateString) {
+        if (!dateString) {
+            resetTimeOptions();
+            return;
+        }
+
+        timeSelect.disabled = true;
+        const unavailableTimes = await fetchUnavailableTimes(dateString);
+        applyUnavailableTimes(unavailableTimes);
+        timeSelect.disabled = false;
+    }
 
     /**
      * Book appointment - sends request to server
@@ -467,5 +538,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Remove any non-digit characters
         this.value = this.value.replace(/[^0-9]/g, '');
     });
+
+    // Update time availability when date changes
+    dateInput.addEventListener('change', function() {
+        updateTimeSlotAvailability(this.value);
+    });
+
+    if (dateInput.value) {
+        updateTimeSlotAvailability(dateInput.value);
+    }
     
 });

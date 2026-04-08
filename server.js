@@ -655,6 +655,31 @@ function isValidDate(dateString) {
     return selectedDate >= today;
 }
 
+function getActiveAppointments() {
+    const appointments = loadPendingAppointments();
+    return Object.values(appointments).filter((appointment) => {
+        if (!appointment || !appointment.date || !appointment.time) {
+            return false;
+        }
+        const status = (appointment.status || 'pending').toLowerCase();
+        return status === 'approved';
+    });
+}
+
+function getUnavailableTimesForDate(dateString) {
+    const times = getActiveAppointments()
+        .filter((appointment) => appointment.date === dateString)
+        .map((appointment) => appointment.time);
+    return Array.from(new Set(times));
+}
+
+function isTimeSlotUnavailable(dateString, timeString) {
+    if (!dateString || !timeString) {
+        return false;
+    }
+    return getUnavailableTimesForDate(dateString).includes(timeString);
+}
+
 // ============================================
 // API ENDPOINTS
 // ============================================
@@ -666,6 +691,26 @@ app.get('/api/health', (req, res) => {
         message: 'Clawed up Glam API is running',
         timestamp: new Date().toISOString(),
         emailConfigured: !!emailTransporter
+    });
+});
+
+// Get unavailable time slots for a date
+app.get('/api/availability', (req, res) => {
+    const { date } = req.query;
+
+    if (!date) {
+        return res.status(400).json({
+            success: false,
+            message: 'Missing date parameter'
+        });
+    }
+
+    const unavailableTimes = getUnavailableTimesForDate(date);
+
+    res.json({
+        success: true,
+        date: date,
+        unavailableTimes: unavailableTimes
     });
 });
 
@@ -722,6 +767,13 @@ app.post('/api/book-appointment', async (req, res) => {
                 success: false,
                 message: 'Validation failed',
                 errors: errors
+            });
+        }
+
+        if (isTimeSlotUnavailable(appointmentDate, appointmentTime)) {
+            return res.status(409).json({
+                success: false,
+                message: 'That time slot is already booked. Please choose another time.'
             });
         }
         
