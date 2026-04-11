@@ -1,0 +1,19 @@
+<svg width="640" height="480" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eee3f1"/>
+      <stop offset="100%" stop-color="#d6bfde"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#bg)"/>
+  <circle cx="520" cy="88" r="70" fill="#ffffff" opacity="0.22"/>
+  <circle cx="130" cy="368" r="80" fill="#ffffff" opacity="0.14"/>
+  <rect x="154" y="114" width="332" height="252" rx="40" fill="#ffffff" opacity="0.8"/>
+  <rect x="204" y="174" width="58" height="146" rx="26" fill="#d5b4df"/>
+  <rect x="274" y="160" width="58" height="160" rx="26" fill="#bc90c9"/>
+  <rect x="344" y="174" width="58" height="146" rx="26" fill="#a575b5"/>
+  <circle cx="232" cy="208" r="7" fill="#ffffff"/>
+  <circle cx="302" cy="198" r="7" fill="#ffffff"/>
+  <circle cx="372" cy="208" r="7" fill="#ffffff"/>
+  <text x="320" y="408" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="30" fill="#7a0c2e">Lilac Crystal</text>
+</svg>

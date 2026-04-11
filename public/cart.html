@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Review your selected press-on sets and proceed to checkout." />
+    <title>Your Cart | Clawedup by Glam</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="shop.css" />
+</head>
+<body>
+    <header class="store-header">
+        <a href="shop.html" class="brand-link" aria-label="Back to shop">
+            <img src="logo.jpeg" alt="Clawedup by Glam logo" />
+            <div class="brand-copy">
+                <strong>Clawedup by Glam</strong>
+                <span>Your Cart</span>
+            </div>
+        </a>
+
+        <div class="header-actions">
+            <a class="link-chip" href="booking.html">Book Appointment</a>
+            <a class="cart-link" href="cart.html" aria-label="Cart item count">
+                <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+                <span>Items</span>
+                <span class="cart-badge" id="headerCartCount">0</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="page-wrap">
+        <section class="page-intro" aria-labelledby="cartHeading">
+            <p>Almost yours</p>
+            <h1 id="cartHeading">Cart Summary</h1>
+            <p class="subtle">Edit quantities, remove items, and continue to checkout.</p>
+        </section>
+
+        <section class="shop-layout">
+            <article class="panel">
+                <div class="panel-body">
+                    <div id="cartItems" class="list-stack"></div>
+                </div>
+            </article>
+
+            <aside class="panel summary-card" aria-label="Order summary">
+                <div class="panel-body">
+                    <h2 style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Order Details</h2>
+                    <div class="summary-row"><span>Items</span><strong id="summaryCount">0</strong></div>
+                    <div class="summary-row"><span>Subtotal</span><strong id="summarySubtotal">INR 0.00</strong></div>
+                    <div class="summary-row total"><span>Total</span><strong id="summaryTotal">INR 0.00</strong></div>
+                    <a href="checkout.html" id="checkoutButton" class="checkout-btn" style="display: inline-block; text-align: center; margin-top: 0.9rem;">Checkout</a>
+                    <a href="shop.html" class="secondary-btn" style="display: inline-block; text-align: center; margin-top: 0.55rem;">Continue Shopping</a>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <script src="cart-store.js"></script>
+    <script src="cart.js"></script>
+</body>
+</html>

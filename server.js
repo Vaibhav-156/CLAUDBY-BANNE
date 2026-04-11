@@ -59,6 +59,7 @@ const PENDING_FILE = path.join(DATA_DIR, 'pending_appointments.json');
 
 // Google Sheets Webhook URL (set in .env file)
 const GOOGLE_SHEETS_WEBHOOK_URL = process.env.GOOGLE_SHEETS_WEBHOOK_URL || '';
+const GOOGLE_SHEETS_ORDERS_WEBHOOK_URL = process.env.GOOGLE_SHEETS_ORDERS_WEBHOOK_URL || '';
 
 // Ensure data directory exists
 function ensureDataDirectory() {
@@ -236,6 +237,80 @@ async function saveAppointmentToGoogleSheets(appointment, status = 'Approved') {
     }
 }
 
+async function saveOrderToGoogleSheets(order) {
+    const targetWebhookUrl = GOOGLE_SHEETS_ORDERS_WEBHOOK_URL || GOOGLE_SHEETS_WEBHOOK_URL;
+
+    if (!targetWebhookUrl) {
+        console.warn('⚠️  Order Google Sheets webhook URL not configured. Set GOOGLE_SHEETS_ORDERS_WEBHOOK_URL in .env file.');
+        return { success: false, error: 'Order Google Sheets not configured' };
+    }
+
+    try {
+        const itemsSummary = order.items
+            .map((item) => `${item.name} x${item.quantity} (INR ${Number(item.price).toFixed(2)})`)
+            .join(' | ');
+
+        // Keep payload compatible with the existing appointment Apps Script while also sending order-specific fields.
+        const payload = {
+            recordType: 'order',
+            orderId: order.orderId,
+            customerName: order.customerName,
+            customerPhone: order.customerPhone,
+            customerAddress: order.customerAddress,
+            items: JSON.stringify(order.items),
+            itemSummary: itemsSummary,
+            totalPrice: order.totalPrice,
+            itemCount: order.itemCount,
+            createdAt: order.createdAt,
+
+            // Backward-compatible fields for existing Google Apps Script setup.
+            name: order.customerName,
+            email: '',
+            phone: order.customerPhone,
+            location: order.customerAddress,
+            date: order.createdAt.split('T')[0],
+            time: new Date(order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            service: `Press-On Order (${order.itemCount} items)`,
+            notes: `${itemsSummary} | Total: INR ${Number(order.totalPrice).toFixed(2)}`,
+            status: 'Order Received',
+            token: order.orderId,
+            confirmationId: order.orderId
+        };
+
+        console.log(`📦 Sending order to Google Sheets - Order: ${order.orderId}, Items: ${order.itemCount}, Total: INR ${Number(order.totalPrice).toFixed(2)}`);
+
+        const response = await fetch(targetWebhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload),
+            redirect: 'follow'
+        });
+
+        const result = await response.text();
+
+        try {
+            const jsonResult = JSON.parse(result);
+            if (jsonResult.success) {
+                console.log(`✅ Order saved to Google Sheets: ${order.orderId}`);
+                return { success: true };
+            }
+            console.error('❌ Order Google Sheets error:', jsonResult.error);
+            return { success: false, error: jsonResult.error };
+        } catch {
+            if (response.ok) {
+                console.log(`✅ Order saved to Google Sheets (non-JSON response): ${order.orderId}`);
+                return { success: true };
+            }
+            throw new Error('Invalid response from Google Sheets');
+        }
+    } catch (error) {
+        console.error('Error saving order to Google Sheets:', error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 // ============================================
 // TOKEN GENERATION
 // ============================================
@@ -246,6 +321,10 @@ function generateSecureToken() {
 
 function generateConfirmationNumber() {
     return 'CUG-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+}
+
+function generateOrderNumber() {
+    return 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
 // ============================================
@@ -655,6 +734,10 @@ function isValidDate(dateString) {
     return selectedDate >= today;
 }
 
+function isValidAddress(address) {
+    return typeof address === 'string' && address.trim().length >= 8;
+}
+
 function getActiveAppointments() {
     const appointments = loadPendingAppointments();
     return Object.values(appointments).filter((appointment) => {
@@ -690,7 +773,9 @@ app.get('/api/health', (req, res) => {
         status: 'OK', 
         message: 'Clawed up Glam API is running',
         timestamp: new Date().toISOString(),
-        emailConfigured: !!emailTransporter
+        emailConfigured: !!emailTransporter,
+        appointmentsGoogleSheetsConfigured: !!GOOGLE_SHEETS_WEBHOOK_URL,
+        ordersGoogleSheetsConfigured: !!(GOOGLE_SHEETS_ORDERS_WEBHOOK_URL || GOOGLE_SHEETS_WEBHOOK_URL)
     });
 });
 
@@ -1026,6 +1111,105 @@ app.post('/api/decline/:token', async (req, res) => {
     }
 });
 
+// Place an order for pre-made press-on sets
+app.post('/api/place-order', async (req, res) => {
+    try {
+        const { customer, cartItems } = req.body;
+
+        if (!customer || !Array.isArray(cartItems)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing customer or cart items data'
+            });
+        }
+
+        const customerName = (customer.name || '').trim();
+        const customerPhone = (customer.phone || '').trim();
+        const customerAddress = (customer.address || '').trim();
+
+        const normalizedItems = cartItems
+            .map((item) => ({
+                id: String(item.id || '').trim(),
+                name: String(item.name || '').trim(),
+                price: Number(item.price),
+                quantity: Math.floor(Number(item.quantity)),
+                image: String(item.image || '').trim()
+            }))
+            .filter((item) => item.id && item.name && Number.isFinite(item.price) && item.price >= 0 && Number.isInteger(item.quantity) && item.quantity > 0);
+
+        const validationErrors = [];
+
+        if (customerName.length < 2) {
+            validationErrors.push('Please provide a valid name');
+        }
+
+        if (!isValidPhone(customerPhone)) {
+            validationErrors.push('Please provide a valid phone number (10-15 digits)');
+        }
+
+        if (!isValidAddress(customerAddress)) {
+            validationErrors.push('Please provide a complete address');
+        }
+
+        if (normalizedItems.length === 0) {
+            validationErrors.push('Cart cannot be empty');
+        }
+
+        if (validationErrors.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation failed',
+                errors: validationErrors
+            });
+        }
+
+        const calculatedTotal = normalizedItems.reduce((sum, item) => {
+            return sum + (item.price * item.quantity);
+        }, 0);
+        const totalPrice = Number(calculatedTotal.toFixed(2));
+        const itemCount = normalizedItems.reduce((sum, item) => sum + item.quantity, 0);
+
+        const order = {
+            orderId: generateOrderNumber(),
+            customerName: customerName,
+            customerPhone: customerPhone,
+            customerAddress: customerAddress,
+            items: normalizedItems,
+            itemCount: itemCount,
+            totalPrice: totalPrice,
+            createdAt: new Date().toISOString()
+        };
+
+        const sheetsResult = await saveOrderToGoogleSheets(order);
+        if (!sheetsResult.success) {
+            return res.status(500).json({
+                success: false,
+                message: 'Order was validated but could not be saved. Please check Google Sheets configuration.',
+                error: sheetsResult.error
+            });
+        }
+
+        console.log(`🛍️ New order received: ${order.orderId}`);
+        console.log(`   Customer: ${order.customerName}`);
+        console.log(`   Items: ${order.itemCount}`);
+        console.log(`   Total: INR ${order.totalPrice.toFixed(2)}`);
+
+        res.json({
+            success: true,
+            message: 'Order placed successfully',
+            orderId: order.orderId,
+            totalPrice: order.totalPrice,
+            itemCount: order.itemCount
+        });
+    } catch (error) {
+        console.error('Place order error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to place order'
+        });
+    }
+});
+
 // Get all approved appointments
 // Note: Appointments are now stored in Google Sheets - access them directly there
 app.get('/api/appointments', async (req, res) => {
@@ -1239,6 +1423,7 @@ app.listen(PORT, async () => {
     const transporter = getEmailTransporter();
     
     const googleSheetsStatus = GOOGLE_SHEETS_WEBHOOK_URL ? 'Configured ✅' : 'Not configured ⚠️';
+    const orderSheetsStatus = (GOOGLE_SHEETS_ORDERS_WEBHOOK_URL || GOOGLE_SHEETS_WEBHOOK_URL) ? 'Configured ✅' : 'Not configured ⚠️';
     
     console.log(`
 ╔═══════════════════════════════════════════════════════════════════╗
@@ -1250,10 +1435,12 @@ app.listen(PORT, async () => {
 ║                                                                   ║
 ║   📊 Storage: Google Sheets (Cloud)                               ║
 ║   📊 Google Sheets: ${googleSheetsStatus}
+║   📊 Order Sheets: ${orderSheetsStatus}
 ║                                                                   ║
 ║   API Endpoints:                                                  ║
 ║   • GET  /api/health           - Health check                     ║
 ║   • POST /api/book-appointment - Submit appointment request       ║
+║   • POST /api/place-order      - Submit pre-made order            ║
 ║   • GET  /api/status/:token    - Check appointment status         ║
 ║   • GET  /api/approve/:token   - Approve appointment              ║
 ║   • GET  /api/decline/:token   - Decline appointment              ║
@@ -1267,5 +1454,5 @@ app.listen(PORT, async () => {
 
 // Serve index.html for all unmatched routes (for Vercel/static hosting)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

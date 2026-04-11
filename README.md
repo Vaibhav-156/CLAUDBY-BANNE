@@ -1,10 +1,13 @@
-# 💅 Clawed up Glam - Appointment Booking System
+# 💅 Clawed up Glam - Appointment + Pre-made Sets Store
 
-A modern, interactive nail salon appointment booking system with Google Sheets storage and an email-based approval workflow.
+A modern, interactive nail salon website with appointment booking and a mini e-commerce flow for pre-made press-on sets.
 
 ## ✨ Features
 
 - **Google Sheets Storage**: All appointments stored in a Google Sheet via Apps Script
+- **Pre-made Sets Shop**: Product grid with add-to-cart flow
+- **Cart + Checkout**: Quantity updates, total pricing, and checkout form
+- **Order Storage in Google Sheets**: Checkout orders stored as new rows
 - **Admin Approval Workflow**: Each booking is reviewed before confirmation
 - **Email Notifications**: Admin approval email + client approval/decline email
 - **Secure Action Links**: One-click approve/decline links with tokens
@@ -34,8 +37,8 @@ npm install
 This installs:
 - `express` - Web server framework
 - `cors` - Cross-origin resource sharing
-- `exceljs` - Excel file creation and manipulation
-- `node-cron` - Scheduled task runner
+- `nodemailer` - Email notifications for appointments
+- `dotenv` - Environment variable support
 
 ### 2. Start the Server
 
@@ -61,11 +64,22 @@ clawed-up-glam/
 ├── public/
 │   ├── index.html        # Landing page
 │   ├── booking.html      # Booking form
-│   ├── styles.css        # Frontend styles
-│   └── script.js         # Frontend behavior
+│   ├── shop.html         # Pre-made sets storefront
+│   ├── cart.html         # Cart summary page
+│   ├── checkout.html     # Checkout form page
+│   ├── styles.css        # Booking page styles
+│   ├── shop.css          # Shop/cart/checkout styles
+│   ├── script.js         # Booking behavior
+│   ├── products.js       # Product catalog data
+│   ├── cart-store.js     # Shared cart state (localStorage)
+│   ├── shop.js           # Shop page behavior
+│   ├── cart.js           # Cart page behavior
+│   └── checkout.js       # Checkout page behavior
 ├── server.js             # Backend API + email/Google Sheets integration
 ├── package.json          # Node.js dependencies
 ├── data/                 # Legacy data folder (not used in Sheets flow)
+├── GOOGLE_SHEETS_SETUP.md        # Appointment sheet setup
+├── GOOGLE_SHEETS_ORDERS_SETUP.md # Order sheet setup
 └── README.md             # This file
 ```
 
@@ -93,6 +107,7 @@ The Google Sheet uses these columns (see GOOGLE_SHEETS_SETUP.md / GOOGLE_SHEETS_
 |--------|----------|-------------|
 | GET | `/api/health` | Health check - shows server status |
 | POST | `/api/book-appointment` | Submit a new appointment request |
+| POST | `/api/place-order` | Submit pre-made sets checkout order |
 | GET | `/api/status/:token` | Check approval status (polling) |
 | GET | `/api/approve/:token` | Admin approve confirmation page |
 | POST | `/api/approve/:token` | Admin approve action |
@@ -184,6 +199,7 @@ pm2 startup
 1. **Environment Variables**: Set these in your host environment:
    ```bash
    GOOGLE_SHEETS_WEBHOOK_URL=...
+   GOOGLE_SHEETS_ORDERS_WEBHOOK_URL=...
    SMTP_USER=...
    SMTP_PASS=...
    ADMIN_EMAIL=...
@@ -246,6 +262,11 @@ Edit `index.html` to add/remove service options:
 - Verify the `GOOGLE_SHEETS_WEBHOOK_URL` in your `.env`
 - Confirm the Apps Script is deployed as a web app (access: Anyone)
 - Check server logs for webhook errors
+
+### Orders not saving to Google Sheets?
+- Verify `GOOGLE_SHEETS_ORDERS_WEBHOOK_URL` (or fallback `GOOGLE_SHEETS_WEBHOOK_URL`)
+- Follow setup in `GOOGLE_SHEETS_ORDERS_SETUP.md`
+- Check `/api/health` for `ordersGoogleSheetsConfigured`
 
 ### Emails not sending?
 - Verify `SMTP_USER` and `SMTP_PASS`

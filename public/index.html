@@ -295,6 +295,13 @@
       line-height: 1.75;
     }
 
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
     /* CTA Button */
     .hero-btn {
       display: inline-flex;
@@ -325,6 +332,18 @@
 
     .hero-btn:hover i  { transform: translateX(4px); }
     .hero-btn:active   { transform: translateY(0); }
+
+    .hero-btn.secondary {
+      background: rgba(255, 255, 255, 0.45);
+      color: var(--burgundy);
+      border-color: rgba(122, 12, 46, 0.45);
+    }
+
+    .hero-btn.secondary:hover {
+      background: rgba(122, 12, 46, 0.08);
+      border-color: var(--burgundy);
+      box-shadow: 0 8px 24px rgba(122, 12, 46, 0.2);
+    }
 
     /* ── RIGHT: image ── */
     .hero-image-wrap {
@@ -409,6 +428,7 @@
       }
 
       .hero-paragraph   { max-width: 100%; }
+      .hero-actions     { align-items: flex-start; }
       .hero-btn         { align-self: flex-start; }
     }
 
@@ -434,6 +454,10 @@
         align-self: stretch;
         justify-content: center;
         padding: 0.85rem 1.5rem;
+      }
+
+      .hero-actions {
+        width: 100%;
       }
 
     }
@@ -530,10 +554,17 @@
           Thank you for supporting my tiny business, muahh.
         </p>
 
-        <a href="booking.html" class="hero-btn" role="button">
-          Book an Appointment
-          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-        </a>
+        <div class="hero-actions">
+          <a href="booking.html" class="hero-btn" role="button">
+            Book an Appointment
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          </a>
+
+          <a href="shop.html" class="hero-btn secondary" role="button">
+            Shop Pre-made Sets
+            <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+          </a>
+        </div>
 
       </div><!-- /hero-content -->
 
@@ -570,6 +601,8 @@
       &copy; 2025 <strong>Clawedup by Glam</strong> &mdash; Nail Care
       &nbsp;|&nbsp;
       <a href="booking.html">Book an Appointment</a>
+      &nbsp;|&nbsp;
+      <a href="shop.html">Shop Pre-made Sets</a>
     </p>
   </footer>
 
